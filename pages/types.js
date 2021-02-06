@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { observer, inject } from 'mobx-react';
-import TypeTags from '@@/typeTags/index'
 import { useHttping, usePagination } from '@/utils/index'
 import { getTypesData, getBooksByType } from '@/utils/request'
 
@@ -8,6 +7,7 @@ import Head from 'next/head'
 import Top from '@@/top/index'
 import Search from '@@/search/index'
 import Nav from '@@/nav/index'
+import TypeTags from '@@/typeTags/index'
 import BookList from '@@/bookList/index'
 
 import styles from '@/styles/Types.module.scss'
@@ -79,7 +79,6 @@ const Types = ({ store: { types }, data, id }) => {
     types.setTypeValue(id)
 
     window.addEventListener('scroll', scrollFn)
-
     return () => {
       window.removeEventListener('scroll', scrollFn)
     }
@@ -93,6 +92,7 @@ const Types = ({ store: { types }, data, id }) => {
       <Top isIndex={true} />
       <Search />
       <Nav />
+      {/* @TODO: 面包屑  */}
       <TypeTags data={_data.types} />
       {!loading ? <div>加载中...</div> : null}
       <BookList books={mergedList} />

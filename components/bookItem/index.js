@@ -3,19 +3,19 @@ import { observer, inject } from 'mobx-react';
 import styles from './Book.module.scss'
 import classnames from 'classnames/bind';
 const cx = classnames.bind(styles);
-import Link from '@@/link/index'
 import { devHost } from "@/utils/index";
+import Link from '@@/link/index'
 
 const BookItem = ({ store: { common }, data: { id, title, author, description, thumb } }) => {
-  const toBookPage = e => {
-    e.preventDefault()
-  }
+  // const toBookPage = e => {
+  //   e.preventDefault()
+  // }
 
   // @TODO: 根据mobx 判断是否是主页，主页用`推荐`标签
   const isIndex = common.pageName === 'index'
 
   return (
-    <article className={cx({ bookItem: true, isRecommend: isIndex })} onClick={toBookPage}>
+    <article className={cx({ bookItem: true, isRecommend: isIndex })}>
       <div className={styles.thumb}>
         <Link as={`/book/${id}`} href={`/types?id=${id}`} title={title}>
           <img src={`http://${devHost}:3011/${thumb}`} alt={title} title={title} />
@@ -25,7 +25,7 @@ const BookItem = ({ store: { common }, data: { id, title, author, description, t
       <div className={styles.info}>
         <header className={styles.infoTop}>
           <h3 className={styles.title}>
-            <Link as={`/book/${id}`} href={`/types?id=${id}`} title={`书名：${title}`}>
+            <Link as={`/book/${id}`} href={`/book?id=${id}`} title={`书名：${title}`}>
               {title}
             </Link>
           </h3>

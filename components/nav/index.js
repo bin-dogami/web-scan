@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { observer, inject } from 'mobx-react';
 import Link from '@@/link/index'
-import styles from './Nav.module.scss'
-import classnames from 'classnames/bind';
-const cx = classnames.bind(styles);
 
-const Nav = ({ store: { common }, data }) => {
+const Nav = ({ store: { common }, children }) => {
+  // const isHome = !['Hot', 'Complete', 'Types', 'History'].includes(common.pageName)
+
   return (
-    <nav className={styles.nav}>
-      <Link href="/" className={cx({ on: common.pageName === 'Home' })} title="首页">首页</Link>
-      <Link href="/hot" className={cx({ on: common.pageName === 'Hot' })} title="热门">热门</Link>
-      <Link href="/complete" className={cx({ on: common.pageName === 'Complete' })} title="完本">完本</Link>
-      <Link href="/types" className={cx({ on: common.pageName === 'Types' })} title="分类">分类</Link>
-      <Link href="/history" className={cx({ on: common.pageName === 'History' })} title="阅读历史">阅读历史</Link>
+    <nav className="nav">
+      <Link href="/" className={common.pageName === 'Home' ? 'on' : ''} title="首页">首页</Link>
+      <Link href="/hot" className={common.pageName === 'Hot' ? 'on' : ''} title="热门">热门</Link>
+      <Link href="/complete" className={common.pageName === 'Complete' ? 'on' : ''} title="完本">完本</Link>
+      <Link href="/types" className={common.pageName === 'Types' ? 'on' : ''} title="分类">分类</Link>
+      {children ? children : <Link href="/history" className={common.pageName === 'History' ? 'on' : ''} title="阅读历史">阅读历史</Link>}
     </nav>
   )
 }

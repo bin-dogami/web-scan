@@ -32,3 +32,28 @@ export const getBooksByType = async (typeId, skip, size = 20) => {
     errorTitle: '获取分类书本错误',
   })
 }
+
+export const getBookById = async (id) => {
+  return await axios({
+    url: `${BASE_URL}scan/getBookById/`,
+    method: 'get',
+    params: {
+      id
+    },
+    errorTitle: '获取书本信息错误',
+  })
+}
+
+export const getMenusByBookId = async (id, skip, size = 20, desc = 0) => {
+  return await axios({
+    url: `${BASE_URL}scan/getMenusByBookId/`,
+    method: 'get',
+    params: {
+      id,
+      skip,
+      size,
+      desc
+    },
+    errorTitle: '获取目录列表错误',
+  })
+}
