@@ -1,0 +1,94 @@
+.page {
+  background-color: #fff;
+  padding: 16px 16px 12px;
+  margin-bottom: 8px;
+}
+
+// 字号
+.content {
+  font-size: 18px;
+  line-height: 32px;
+
+  p {
+    margin-bottom: 32px;
+  }
+}
+
+.big20 {
+  .content {
+    font-size: 20px;
+    line-height: 36px;
+
+    p {
+      margin-bottom: 36px;
+    }
+  }
+}
+
+.big22 {
+  .content {
+    font-size: 22px;
+    line-height: 40px;
+
+    p {
+      margin-bottom: 36px;
+    }
+  }
+}
+
+.big24 {
+  .content {
+    font-size: 24px;
+    line-height: 44px;
+
+    p {
+      margin-bottom: 36px;
+    }
+  }
+}
+
+.big28 {
+  .content {
+    font-size: 28px;
+    line-height: 50px;
+
+    p {
+      margin-bottom: 42px;
+    }
+  }
+}
+
+.small16 {
+  .content {
+    font-size: 16px;
+    line-height: 30px;
+
+    p {
+      margin-bottom: 30px;
+    }
+  }
+}
+
+.small14 {
+  .content {
+    font-size: 14px;
+    line-height: 24px;
+
+    p {
+      margin-bottom: 20px;
+    }
+  }
+}
+
+//
+.fontSize {
+  margin: 10px 16px;
+
+  span {
+    margin-left: 15px;
+  }
+
+  .disabled {
+    color: #bbb;
+  }
+}

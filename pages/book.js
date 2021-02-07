@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { observer, inject } from 'mobx-react';
 import { devHost, useHttping, usePagination, usePaginationDrops } from '@/utils/index'
 import { getBookById, getMenusByBookId } from '@/utils/request'
+import * as dayjs from 'dayjs'
 
 import Head from 'next/head'
 import Top from '@@/top/index'
@@ -15,19 +16,21 @@ import styles from '@/styles/Book.module.scss'
 import classnames from 'classnames/bind'
 const cx = classnames.bind(styles)
 
-const defaultPageSize = 5
+const defaultPageSize = 20
 const oppositeDefaultPageSize = 100
-const requestNum = 100
-const useStateRef = (start, isDesc, pageSize, triggerHttp) => {
-  const startRef = useRef(0)
+const realRequestNum = 100
+const useStateRef = (pageIndex, isDesc, pageSize, triggerHttp) => {
+  // 每次请求limit 的 start
+  const httpStartRef = useRef(0)
+  const pageIndexRef = useRef(0)
   const isDescRef = useRef(false)
   const [oppositePageSize, setOppositePageSize] = useState(0)
   const pageSizeRef = useRef(0)
   const triggerHttpRef = useRef(0)
 
   useEffect(() => {
-    startRef.current = start
-  }, [start])
+    pageIndexRef.current = pageIndex
+  }, [pageIndex])
 
   useEffect(() => {
     isDescRef.current = isDesc
@@ -42,79 +45,99 @@ const useStateRef = (start, isDesc, pageSize, triggerHttp) => {
     triggerHttpRef.current = triggerHttp
   }, [triggerHttp])
 
-  return [startRef, isDescRef, oppositePageSize, pageSizeRef, triggerHttpRef]
+  return [httpStartRef, pageIndexRef, isDescRef, oppositePageSize, pageSizeRef, triggerHttpRef]
 }
 
 const Book = ({ store: { book, common }, data, id }) => {
   const [novel, list, DescMenus, total, recommendBooks] = Array.isArray(data) && data.length >= 5 ? data : [{}, [], [], 0, []]
 
-  const [triggerHttp, setTriggerHttp] = useState(0)
-  const [menusData, setMenusData] = useState({
-    list,
-    total
-  })
-  const [menusList, setMenusList] = useState([])
+  const lastMenu = DescMenus.length ? DescMenus[0] : (list.length ? list[list.length - 1] : {})
 
-  // 第几页、倒序、每页章数
-  const [start, setStart] = useState(0)
+  const [triggerHttp, setTriggerHttp] = useState(0)
+  const cachedMenusObj = useRef({
+    0: list
+  })
+  const [menusList, setMenusList] = useState(list.slice(0, defaultPageSize))
+  // 目录当前在第几页
+  const [pageIndex, setPageIndex] = useState(0)
+  // 倒序
   const [isDesc, setIsDesc] = useState(0)
+  // 每页章数
   const [pageSize, setPageSize] = useState(defaultPageSize)
   // 分页下拉section
-  const menuOptions = usePaginationDrops(menusData.total, isDesc, pageSize)
+  const menuOptions = usePaginationDrops(total, isDesc, pageSize)
   // 创建相关ref
-  const [startRef, isDescRef, oppositePageSize, pageSizeRef, triggerHttpRef] = useStateRef(start, isDesc, pageSize, triggerHttp)
+  const [httpStartRef, pageIndexRef, isDescRef, oppositePageSize, pageSizeRef, triggerHttpRef] = useStateRef(pageIndex, isDesc, pageSize, triggerHttp)
   // @TODO: useCallback
+  // 每页目录数切换
   const onSetPageSize = () => {
     const size = pageSize === defaultPageSize ? oppositeDefaultPageSize : defaultPageSize
-    startRef.current = 0
-    setStart(0)
+    pageIndexRef.current = 0
+    setPageIndex(0)
+    httpStartRef.current = 0
+    setHttpStart(0)
     pageSizeRef.current = size
     setPageSize(size)
     // 重新请求
     setTriggerHttp(triggerHttpRef.current + 1)
   }
+  // 正序 => 倒序
   const onDesc = useCallback(() => {
-    setStart(0)
+    setPageIndex(0)
     isDescRef.current = +(!isDescRef.current)
     setIsDesc(isDescRef.current)
     setTriggerHttp(triggerHttpRef.current + 1)
   }, [])
   const pageChange = useCallback(next => {
-    if (next < 0 || next >= menuOptions.length) {
+    if (next < 0) {
       return
     }
-    // const next = +e.target.value
-    // 缓存了 requestNum 条数据
-    if (next < startRef.current + requestNum / pageSizeRef.current) {
-      setMenusList(menusData.list.slice(next * pageSizeRef.current, (next + 1) * pageSizeRef.current))
+    httpStartRef.current = Math.floor(next / (realRequestNum / pageSizeRef.current))
+    const cachedMenusList = cachedMenusObj.current[httpStartRef.current]
+    // console.log(httpStartRef.current, next, next % (realRequestNum / pageSizeRef.current) * pageSizeRef.current, cachedMenusObj.current)
+    if (cachedMenusList) {
+      const start = next % (realRequestNum / pageSizeRef.current) * pageSizeRef.current
+      cachedMenusList && setMenusList(cachedMenusList.slice(start, start + pageSizeRef.current))
     } else {
-      // 重新请求
+      // 请求数据
       setTriggerHttp(triggerHttpRef.current + 1)
     }
-    setStart(next)
-  }, [menusData, menuOptions])
+
+    setPageIndex(next)
+  }, [])
   // 下拉选择分页
   const onPageChange = useCallback(e => {
     pageChange(+e.target.value)
   }, [pageChange])
   // 上一页
   const onPrev = useCallback(e => {
-    pageChange(start - 1)
-  }, [start, pageChange])
+    pageChange(pageIndex - 1)
+  }, [pageIndex, pageChange])
   // 下一页
   const onNext = useCallback(e => {
-    pageChange(start + 1)
-  }, [start, pageChange])
+    if (pageIndex + 1 < menuOptions.length) {
+      pageChange(pageIndex + 1)
+    }
+  }, [pageIndex, pageChange, menuOptions])
 
-  // @TODO: 前端缓存一下数据
   // 发请求，不管是每页20还是100 都请求100个回来，怎么处理再按每页多少来
   const getData = useCallback(async () => {
-    return await getMenusByBookId(id, startRef.current * pageSizeRef.current, requestNum, isDescRef.current)
+    return await getMenusByBookId(id, httpStartRef.current * realRequestNum, realRequestNum, isDescRef.current)
   }, [])
   const { loading, httpData } = useHttping(triggerHttp, getData)
 
+  // @TODO: 这个不行啊 收藏本站
   const onCollectBook = () => {
-
+    const title = `${novel.title}-${common.siteName}网`
+    try {
+      window.external.addFavorite(window.location.href, title);
+    } catch (e) {
+      try {
+        window.sidebar.addPanel(title, window.location.href, "");
+      } catch (e) {
+        alert("抱歉，您所使用的浏览器无法自动收藏 \n\n 请手动收藏");
+      }
+    }
   }
 
   const onGoBottom = () => {
@@ -128,18 +151,12 @@ const Book = ({ store: { book, common }, data, id }) => {
 
   useEffect(() => {
     const [list, total] = Array.isArray(httpData) ? httpData : [[], 0]
-    // 防止 httpData 初始化时导致清空了 menusData
+    // 防止 httpData 初始化时导致清空了 cachedMenusObj
     if (total > 0) {
-      setMenusData({
-        list,
-        total
-      })
+      cachedMenusObj.current[httpStartRef.current] = list.length ? list : null
+      pageChange(pageIndexRef.current)
     }
   }, [httpData])
-
-  useEffect(() => {
-    setMenusList(menusData.list.slice(0, pageSizeRef.current))
-  }, [menusData])
 
   return (
     <>
@@ -151,13 +168,13 @@ const Book = ({ store: { book, common }, data, id }) => {
       <Nav />
       <article className="chunkShadow">
         <header className="header crumbs">
-          <strong><Link href="/" title={common.siteName}>{common.siteName}</Link></strong><span>/</span><h1>{novel.title}</h1>
+          <strong><Link href="/" title={common.siteName}>{common.siteName}</Link></strong>
+          <span>/</span>
+          <strong>{novel.title}</strong>
         </header>
         <article className={styles.book}>
-          <header className="hide">
-            <h2>
-              {novel.title}内容介绍
-            </h2>
+          <header className="commonHeader">
+            <h1>{novel.title}</h1>
           </header>
           <div className={styles.detail}>
             <div className={styles.thumb}>
@@ -166,16 +183,40 @@ const Book = ({ store: { book, common }, data, id }) => {
             <div className={styles.info}>
               <header>
                 <h3>
+                  作者：
                   <a href="" title={`作者：${novel.author}`} className={styles.author}>
-                    作者：{novel.author}
+                    {novel.author}
                   </a>
                 </h3>
               </header>
               <ul>
-                <li><strong>类别：</strong></li>
-                <li><strong>状态：</strong></li>
-                <li><strong>更新时间：</strong></li>
-                <li><strong>最新章节：</strong></li>
+                <li>
+                  <strong>
+                    类别：
+                    <Link href={`/types/${novel.typeid}`}>
+                      {novel.typeName}
+                    </Link>
+                  </strong>
+                </li>
+                <li>
+                  <strong>状态：
+                    {novel.isComplete ?
+                      <Link href='/complete'>
+                        全本
+                      </Link> : '连载'}
+                  </strong>
+                </li>
+                <li><strong>更新时间：{dayjs(novel.updatetime).format('YYYY-MM-DD HH:mm')}</strong></li>
+                <li>
+                  <strong>
+                    最新章节：
+                    {lastMenu && lastMenu.id ?
+                      <Link as={`/page/${lastMenu.id}`} href={`/page?id=${lastMenu.id}`}>
+                        {lastMenu.mname}
+                      </Link> : ''
+                    }
+                  </strong>
+                </li>
               </ul>
             </div>
           </div>
@@ -198,7 +239,7 @@ const Book = ({ store: { book, common }, data, id }) => {
               {novel.title}章节列表
             </h2>
           </header>
-          {!isDesc ?
+          {DescMenus.length && !isDesc ?
             <article>
               <header className={styles.menus}>
                 <h3>
@@ -209,7 +250,7 @@ const Book = ({ store: { book, common }, data, id }) => {
               <ul className={cx({ menuList: true, descList: true })}>
                 {DescMenus.map(({ id, mname, index }) => (
                   <li key={id}>
-                    <Link as={`/page/${id}`} href={`/page?id=${id}`}>
+                    <Link as={`/page/${id}`} href={`/page?id=${id}`} title={index > 0 ? `第${index}章` : ''}>
                       <span>{index > 0 ? `第${index}章` : ''}</span><strong>{mname}</strong>
                     </Link>
                   </li>
@@ -225,10 +266,10 @@ const Book = ({ store: { book, common }, data, id }) => {
               {/* {isDesc ? <span onClick={onDesc}>正序</span> : null} */}
               <span onClick={onSetPageSize}>每页 {oppositePageSize} 章</span>
             </header>
-            <ul className={cx({ menuList: true, fixBlank: menusList.length % 2 !== 0 })}>
+            <ul className={cx({ menuList: true, fixBlank: menusList.length % 2 !== 0, loading })}>
               {menusList.map(({ id, mname, index }) => (
                 <li key={id}>
-                  <Link as={`/page/${id}`} href={`/page?id=${id}`}>
+                  <Link as={`/page/${id}`} href={`/page?id=${id}`} title={index > 0 ? `第${index}章` : ''}>
                     <span className={cx({ mr10: index > 0 })}>{index > 0 ? `第${index}章` : ''}</span><strong>{mname}</strong>
                   </Link>
                 </li>
@@ -236,13 +277,13 @@ const Book = ({ store: { book, common }, data, id }) => {
             </ul>
           </article>
           <div className={styles.pageChange}>
-            <span className={cx({ disabled: loading || start === 0 })} onClick={onPrev}>上一页</span>
-            <select value={start} onChange={onPageChange}>
+            <span className={cx({ disabled: loading || pageIndex === 0 })} onClick={onPrev}>{pageIndex === 0 ? '前面没了' : <>&lt;上一页</>}</span>
+            <select value={pageIndex} onChange={onPageChange}>
               {menuOptions.map((v, index) => (
                 <option key={v} value={index} disabled={loading}>{v}章</option>
               ))}
             </select>
-            <span className={cx({ disabled: loading || start === menuOptions.length - 1 })} onClick={onNext}>下一页</span>
+            <span className={cx({ disabled: loading || pageIndex === menuOptions.length - 1 })} onClick={onNext}>{pageIndex === menuOptions.length - 1 ? '后面没了' : <>下一页 &gt;</>}</span>
           </div>
         </section>
       </article>

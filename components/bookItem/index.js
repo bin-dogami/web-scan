@@ -12,7 +12,7 @@ const BookItem = ({ store: { common }, data: { id, title, author, description, t
   // }
 
   // @TODO: 根据mobx 判断是否是主页，主页用`推荐`标签
-  const isIndex = common.pageName === 'index'
+  const isIndex = common.pageName === 'Home'
 
   return (
     <article className={cx({ bookItem: true, isRecommend: isIndex })}>

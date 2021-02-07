@@ -57,3 +57,14 @@ export const getMenusByBookId = async (id, skip, size = 20, desc = 0) => {
     errorTitle: '获取目录列表错误',
   })
 }
+
+export const getPageById = async (id) => {
+  return await axios({
+    url: `${BASE_URL}scan/getPageById/`,
+    method: 'get',
+    params: {
+      id
+    },
+    errorTitle: '获取书本信息错误',
+  })
+}

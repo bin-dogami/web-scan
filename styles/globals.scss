@@ -311,14 +311,29 @@ input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
 
 .header {
   padding: 10px 16px;
-  font-size: 16px;
   background-color: #fff;
   border-bottom: 1px solid #f5f5f5;
 }
 
+.commonHeader {
+  h1 {
+    color: #f7700f;
+    font-size: 20px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 1px #afafaf;
+    line-height: 30px;
+  }
+}
+
 .crumbs {
+  font-size: 14px;
+
   strong {
     font-weight: normal;
+    font-size: 14px;
+  }
+
+  a {
     color: #4e6ef2;
   }
 
@@ -330,7 +345,7 @@ input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
   h1 {
     display: inline;
     color: #f7700f;
-    font-size: 16px;
+    font-size: 18px;
     padding-right: 20px;
   }
 }
@@ -379,9 +394,27 @@ input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
 }
 
 footer  {
+  margin-top: 8px;
   .nav {
     margin-bottom: 0;
     padding: 12px 30px;
+
+    span {
+      font-size: 14px;
+      text-shadow: 0 0 1px #afafaf;
+      display: flex;
+      align-items: center;
+
+      &:after {
+        content: '';
+        width: 16px;
+        height: 16px;
+        display: inline-block;
+        background: url(./images/up.png) no-repeat;
+        background-size: 100%;
+        margin-left: 2px;
+      }
+    }
   }
 
   .thks {
