@@ -64,8 +64,16 @@ export const usePagination = (data) => {
   }
 }
 
+const NoMoreText = <div className="noMore"></div>
+export const LoadingText = () => {
+  return (
+    <div className="loadingChunk">正在加载中...</div>
+  )
+}
 export const useLoading = (loading, hasMore) => {
-
+  return (
+    !hasMore ? NoMoreText : (loading ? <LoadingText /> : null)
+  )
 }
 
 // 根据目录总数、倒序与否、每页数 获得分页下拉选项数据
@@ -85,4 +93,77 @@ export const usePaginationDrops = (total, isDesc = false, pageSize = 20) => {
   }, [total, isDesc, pageSize])
 
   return menuOptions
+}
+
+export const scrollIntoView = (selector) => {
+  if (selector && selector.scrollIntoView) {
+    selector.scrollIntoView({
+      behavior: 'smooth'
+    });
+  }
+}
+
+export const scrollIntoViewIfNeeded = (selector) => {
+  if (selector && selector.scrollIntoViewIfNeeded) {
+    selector.scrollIntoViewIfNeeded();
+  }
+}
+
+export const throttle = (fn, wait) => {
+  var pre = Date.now();
+  return function () {
+    var context = this;
+    var args = arguments;
+    var now = Date.now();
+    if (now - pre >= wait) {
+      fn.apply(context, args);
+      pre = Date.now();
+    }
+  }
+}
+
+// 获取元素距文档顶部（非视口）距离
+export const getElementToPageTop = (el) => {
+  if (el == null) {
+    return
+  }
+
+  if (el.parentElement) {
+    return getElementToPageTop(el.parentElement) + el.offsetTop
+  }
+  return el.offsetTop
+}
+
+export const scrollThrottle = (fn, timer = 150, domRef) => throttle(() => {
+  const docElem = document.documentElement
+  const docBody = document.body
+  const scrollTop = domRef ? domRef.current.scrollTop : (docElem.scrollTop || docBody.scrollTop)
+  const clientHeight = domRef ? domRef.current.clientHeight : (docElem.clientHeight || docBody.clientHeight)
+  const scrollHeight = domRef ? domRef.current.scrollHeight : (docElem.scrollHeight || docBody.scrollHeight)
+  fn && fn(scrollTop, clientHeight, scrollHeight)
+}, timer)
+
+export const useScrollThrottle = (fn, domRef) => {
+  useEffect(() => {
+    const _fn = scrollThrottle(fn, 150, domRef)
+    const dom = domRef ? domRef.current : window
+    if (dom) {
+      dom.addEventListener('scroll', _fn)
+    } else {
+      // 这个好像不会执行
+      setTimeout(() => {
+        domRef.current && domRef.current.addEventListener('scroll', _fn)
+      }, 1000)
+    }
+
+    return () => {
+      if (dom) {
+        dom.removeEventListener('scroll', _fn)
+      } else {
+        setTimeout(() => {
+          domRef.current && domRef.current.removeEventListener('scroll', _fn)
+        }, 1000)
+      }
+    }
+  }, [])
 }

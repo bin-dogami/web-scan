@@ -58,13 +58,27 @@ export const getMenusByBookId = async (id, skip, size = 20, desc = 0) => {
   })
 }
 
-export const getPageById = async (id) => {
+export const getPageById = async (id, onlypage = '') => {
   return await axios({
     url: `${BASE_URL}scan/getPageById/`,
     method: 'get',
     params: {
-      id
+      id,
+      onlypage
     },
-    errorTitle: '获取书本信息错误',
+    errorTitle: '获取章节信息错误',
+  })
+}
+
+export const getPrevNextMenus = async (id, novelId, isPrev = 0) => {
+  return await axios({
+    url: `${BASE_URL}scan/getPrevNextMenus/`,
+    method: 'get',
+    params: {
+      id,
+      novelId,
+      isPrev
+    },
+    errorTitle: '获取目录信息错误',
   })
 }

@@ -13,9 +13,10 @@ const BookItem = ({ store: { common }, data: { id, title, author, description, t
 
   // @TODO: 根据mobx 判断是否是主页，主页用`推荐`标签
   const isIndex = common.pageName === 'Home'
+  const isOrder = ['Types', 'Hot', 'Complete'].includes(common.pageName)
 
   return (
-    <article className={cx({ bookItem: true, isRecommend: isIndex })}>
+    <article className={cx({ bookItem: true, isRecommend: isIndex, bookItemOrder: isOrder })}>
       <div className={styles.thumb}>
         <Link as={`/book/${id}`} href={`/types?id=${id}`} title={title}>
           <img src={`http://${devHost}:3011/${thumb}`} alt={title} title={title} />

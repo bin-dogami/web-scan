@@ -9,30 +9,6 @@
     margin-bottom: 0;
   }
 
-  &:nth-child(-n+3) .thumb::after {
-    content: 'Top1';
-    position: absolute;
-    right: 0;
-    top: 0;
-    background: #f33;
-    width: 70px;
-    height: 18px;
-    transform: rotate(45deg) scale(0.8) translate(24px, -19px);
-    line-height: 18px;
-    color: #fff;
-    text-align: center;
-  }
-
-  &:nth-child(2) .thumb::after {
-    content: 'Top2';
-    background: #f60;
-  }
-
-  &:nth-child(3) .thumb::after {
-    content: 'Top3';
-    background: #faa90e;
-  }
-
   .thumb {
     width: 24%;
     overflow: hidden;
@@ -89,6 +65,32 @@
   }
 }
 
+.bookItemOrder {
+  &:nth-child(-n+3) .thumb::after {
+    content: 'Top1';
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: #f33;
+    width: 70px;
+    height: 18px;
+    transform: rotate(45deg) scale(0.8) translate(24px, -19px);
+    line-height: 18px;
+    color: #fff;
+    text-align: center;
+  }
+
+  &:nth-child(2) .thumb::after {
+    content: 'Top2';
+    background: #f60;
+  }
+
+  &:nth-child(3) .thumb::after {
+    content: 'Top3';
+    background: #faa90e;
+  }
+}
+
 .bookItem.isRecommend {
   &:nth-child(1) .thumb::after {
     content: '推荐';
@@ -96,5 +98,11 @@
     height: 18px;
     line-height: 20px;
     transform: rotate(45deg) scale(0.8) translate(23px, -19px);
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 70px;
+    color: #fff;
+    text-align: center;
   }
 }

@@ -316,7 +316,7 @@ input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
 }
 
 .commonHeader {
-  h1 {
+  h1, h2 {
     color: #f7700f;
     font-size: 20px;
     margin-bottom: 10px;
@@ -328,7 +328,7 @@ input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
 .crumbs {
   font-size: 14px;
 
-  strong {
+  strong, h1 {
     font-weight: normal;
     font-size: 14px;
   }
@@ -344,9 +344,9 @@ input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
 
   h1 {
     display: inline;
-    color: #f7700f;
-    font-size: 18px;
-    padding-right: 20px;
+    // color: #f7700f;
+    // font-size: 18px;
+    // padding-right: 20px;
   }
 }
 
@@ -427,3 +427,146 @@ footer  {
   }
 }
 
+.sideNav {
+  position: fixed;
+  left: 0;
+  left: -70%;
+  top: 0;
+  bottom: 0;
+  margin-left: -5px;
+  width: 70%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  box-shadow: 0 0 5px 5px rgba(0, 0, 0, .1);
+  z-index: 90;
+  padding: 16px 0;
+
+  h2 {
+    font-size: 16px;
+    text-align: center;
+    color: #f7700f;
+    margin-bottom: 20px;
+  }
+
+  ul {
+    flex: 1;
+  }
+
+  li {
+    padding: 0 16px;
+    margin-bottom: 16px;
+    line-height: 20px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 16px;
+  }
+
+  .on {
+    color: #f7700f;
+    border-left: 3px solid #f7700f;
+  }
+}
+
+@keyframes loading
+{
+	from {
+    transform: rotate(0);
+  }
+	to {
+    transform: rotate(360deg);
+  }
+}
+
+.pagesWrapper {
+  min-height: 300px;
+}
+
+.loadingOnWrapper {
+  position: relative;
+
+  &:before, &:after {
+    content: '';
+    position: absolute;
+    z-index: 1;
+  }
+
+  &:before {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+  }
+
+  &:after {
+    width: 32px;
+    height: 32px;
+    background: url(./images/loading.png);
+    background-size: 100%;
+    left: 50%;
+    top: 50%;
+    margin: -15px 0 0 -15px;
+    animation: loading 1s ease-in-out infinite;
+  }
+}
+
+.loadingChunk {
+  margin: 20px 0;
+  text-align: center;
+  font-size: 16px;
+
+  &::before {
+    content: '';
+    animation: loading 1s ease-in-out infinite;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: url(./images/loading.png) no-repeat;
+    background-size: 100%;
+    vertical-align: middle;
+    margin-right: 8px;
+    position: relative;
+    top: -3px;
+  }
+}
+
+.noMore {
+  margin: 20px;
+  text-align: center;
+  font-size: 16px;
+  position: relative;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: #ddd;
+  }
+
+  &:after {
+    content: '没有更多了～';
+    position: relative;
+    z-index: 1;
+    padding: 0 20px;
+    background-color: #F8F9FA;
+  }
+}
+
+.page404 {
+  margin: 30px;
+  text-align: center;
+  font-size: 16px;
+  line-height: 30px;
+
+  a {
+    color: #f7700f;
+  }
+}
+
+.navTransition {
+  transition: left 0.3s ease-out;
+}

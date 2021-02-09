@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { observer, inject } from 'mobx-react';
-import { devHost, useHttping, usePagination, usePaginationDrops } from '@/utils/index'
+import { devHost, useHttping, usePagination, usePaginationDrops, scrollIntoView } from '@/utils/index'
 import { getBookById, getMenusByBookId } from '@/utils/request'
 import * as dayjs from 'dayjs'
 
@@ -9,7 +9,7 @@ import Top from '@@/top/index'
 import Search from '@@/search/index'
 import Nav from '@@/nav/index'
 import Footer from '@@/footer/index'
-import BookList from '@@/bookList/index'
+import Recommends from "@@/recommends/index";
 import Link from '@@/link/index'
 
 import styles from '@/styles/Book.module.scss'
@@ -75,7 +75,6 @@ const Book = ({ store: { book, common }, data, id }) => {
     pageIndexRef.current = 0
     setPageIndex(0)
     httpStartRef.current = 0
-    setHttpStart(0)
     pageSizeRef.current = size
     setPageSize(size)
     // 重新请求
@@ -94,7 +93,6 @@ const Book = ({ store: { book, common }, data, id }) => {
     }
     httpStartRef.current = Math.floor(next / (realRequestNum / pageSizeRef.current))
     const cachedMenusList = cachedMenusObj.current[httpStartRef.current]
-    // console.log(httpStartRef.current, next, next % (realRequestNum / pageSizeRef.current) * pageSizeRef.current, cachedMenusObj.current)
     if (cachedMenusList) {
       const start = next % (realRequestNum / pageSizeRef.current) * pageSizeRef.current
       cachedMenusList && setMenusList(cachedMenusList.slice(start, start + pageSizeRef.current))
@@ -141,12 +139,7 @@ const Book = ({ store: { book, common }, data, id }) => {
   }
 
   const onGoBottom = () => {
-    const footer = document.querySelector('footer');
-    if (footer && footer.scrollIntoView) {
-      footer.scrollIntoView({
-        behavior: 'smooth'
-      });
-    }
+    scrollIntoView(document.querySelector('footer'))
   }
 
   useEffect(() => {
@@ -158,17 +151,23 @@ const Book = ({ store: { book, common }, data, id }) => {
     }
   }, [httpData])
 
+  useEffect(() => {
+    if (pageSizeRef.current === 100 && menusList.length) {
+      scrollIntoView(document.querySelector('#menus'))
+    }
+  }, [menusList])
+
   return (
     <>
       <Head>
         <title>11111</title>
       </Head>
-      <Top isIndex={true} noH1={true} />
+      <Top noH1={true} />
       <Search />
       <Nav />
       <article className="chunkShadow">
         <header className="header crumbs">
-          <strong><Link href="/" title={common.siteName}>{common.siteName}</Link></strong>
+          <strong><Link href="/" title="首页">首页</Link></strong>
           <span>/</span>
           <strong>{novel.title}</strong>
         </header>
@@ -240,8 +239,8 @@ const Book = ({ store: { book, common }, data, id }) => {
             </h2>
           </header>
           {DescMenus.length && !isDesc ?
-            <article>
-              <header className={styles.menus}>
+            <article className={styles.menusWrapper}>
+              <header className={styles.menusHeader}>
                 <h3>
                   {novel.title.length < 10 ? `${novel.title} · 最新章节` : '最新章节'}
                 </h3>
@@ -258,23 +257,25 @@ const Book = ({ store: { book, common }, data, id }) => {
               </ul>
             </article> : null
           }
-          <article>
-            <header className={styles.menus}>
+          <article className={styles.menusWrapper} id="menus">
+            <header className={styles.menusHeader}>
               <h3>
                 {novel.title.length < 10 ? `${novel.title} · 正文章节` : '正文章节'}
               </h3>
               {/* {isDesc ? <span onClick={onDesc}>正序</span> : null} */}
               <span onClick={onSetPageSize}>每页 {oppositePageSize} 章</span>
             </header>
-            <ul className={cx({ menuList: true, fixBlank: menusList.length % 2 !== 0, loading })}>
-              {menusList.map(({ id, mname, index }) => (
-                <li key={id}>
-                  <Link as={`/page/${id}`} href={`/page?id=${id}`} title={index > 0 ? `第${index}章` : ''}>
-                    <span className={cx({ mr10: index > 0 })}>{index > 0 ? `第${index}章` : ''}</span><strong>{mname}</strong>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <div className={loading ? 'loadingOnWrapper' : ''}>
+              <ul className={cx({ menuList: true, fixBlank: menusList.length % 2 !== 0 })}>
+                {menusList.map(({ id, mname, index }) => (
+                  <li key={id}>
+                    <Link as={`/page/${id}`} href={`/page?id=${id}`} title={index > 0 ? `第${index}章` : ''}>
+                      <span className={cx({ mr10: index > 0 })}>{index > 0 ? `第${index}章` : ''}</span><strong>{mname}</strong>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </article>
           <div className={styles.pageChange}>
             <span className={cx({ disabled: loading || pageIndex === 0 })} onClick={onPrev}>{pageIndex === 0 ? '前面没了' : <>&lt;上一页</>}</span>
@@ -287,15 +288,7 @@ const Book = ({ store: { book, common }, data, id }) => {
           </div>
         </section>
       </article>
-      <article className={styles.hotRecommend}>
-        <header className="header h2Header">
-          <h2>
-            热门推荐
-            </h2>
-          <a>更多...</a>
-        </header>
-        <BookList books={recommendBooks} />
-      </article>
+      <Recommends data={recommendBooks} />
       <Footer />
     </>
   )

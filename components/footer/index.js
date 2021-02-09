@@ -15,7 +15,7 @@ const Footer = ({ store: { common } }) => {
   }
 
   return (
-    <footer>
+    <footer id="footerChunk">
       <Nav>
         <span onClick={onGoTop}>回到顶部</span>
       </Nav>

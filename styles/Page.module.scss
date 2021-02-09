@@ -2,6 +2,14 @@
   background-color: #fff;
   padding: 16px 16px 12px;
   margin-bottom: 8px;
+
+  :global(.commonHeader) {
+    margin-bottom: 24px;
+  }
+}
+
+.pageTitleHeader {
+  margin: 30px 0 40px;
 }
 
 // 字号
@@ -80,12 +88,63 @@
   }
 }
 
-//
-.fontSize {
-  margin: 10px 16px;
+// 设置
+.pageSetting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
 
-  span {
-    margin-left: 15px;
+  a, span {
+    padding: 0 10px;
+    position: relative;
+    font-size: 14px;
+  }
+
+  .borderRight {
+    &:after {
+      content: '';
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      margin-top: -6px;
+      height: 12px;
+      border-right: 1px solid #dadada;
+    }
+  }
+}
+
+.pageChange {
+  display: flex;
+  align-items: center;
+  color: #4e6ef2;
+
+  :global(.menusHidePrevent) {
+    width: 18px;
+    height: 18px;
+    background: url(./images/menu.png) no-repeat;
+    background-size: 100%;
+    padding: 0;
+    top: -1px;
+    line-height: 100px;
+    overflow: hidden;
+  }
+}
+
+.setting {
+  display: flex;
+  align-items: center;
+  color: #4e6ef2;
+
+  .settingBtn {
+    width: 22px;
+    height: 22px;
+    background: url(./images/setting.png) no-repeat;
+    background-size: 100%;
+    padding: 0;
+    top: -1px;
+    line-height: 100px;
+    overflow: hidden;
   }
 
   .disabled {

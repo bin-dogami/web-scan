@@ -8,9 +8,11 @@ const List = ({ store: { types }, books }) => {
       <header className="hide">
         <h2>{types.typeName}</h2>
       </header>
-      {books.map((item, index) => (
-        <BookItem data={item} index={index} key={index} />
-      ))}
+      <div>
+        {books.map((item, index) => (
+          <BookItem data={item} index={index} key={index} />
+        ))}
+      </div>
     </section>
   )
 }
