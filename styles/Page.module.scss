@@ -129,6 +129,14 @@
     line-height: 100px;
     overflow: hidden;
   }
+
+  a:last-child {
+    padding-right: 0;
+  }
+
+  .disabled {
+    color: #bbb;
+  }
 }
 
 .setting {
@@ -145,6 +153,10 @@
     top: -1px;
     line-height: 100px;
     overflow: hidden;
+  }
+
+  span:first-child {
+    padding-left: 0;
   }
 
   .disabled {

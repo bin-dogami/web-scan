@@ -9,12 +9,14 @@ export const getIndexData = async () => {
   })
 }
 
-export const getTypesData = async (id) => {
+export const getTypesData = async (id, skip, size = 20) => {
   return await axios({
     url: `${BASE_URL}scan/getTypesData`,
     method: 'get',
     params: {
-      id
+      id,
+      skip,
+      size
     },
     errorTitle: '获取分类数据错误',
   })
@@ -33,12 +35,37 @@ export const getBooksByType = async (typeId, skip, size = 20) => {
   })
 }
 
-export const getBookById = async (id) => {
+export const getBooksByCompleted = async (skip, size = 20) => {
+  return await axios({
+    url: `${BASE_URL}scan/getBooksByCompleted/`,
+    method: 'get',
+    params: {
+      skip,
+      size
+    },
+    errorTitle: '获取全本小说错误',
+  })
+}
+
+export const getBooksByHot = async (skip, size = 20) => {
+  return await axios({
+    url: `${BASE_URL}scan/getBooksByHot/`,
+    method: 'get',
+    params: {
+      skip,
+      size
+    },
+    errorTitle: '获取热门推荐小说错误',
+  })
+}
+
+export const getBookById = async (id, skip = 0) => {
   return await axios({
     url: `${BASE_URL}scan/getBookById/`,
     method: 'get',
     params: {
-      id
+      id,
+      skip
     },
     errorTitle: '获取书本信息错误',
   })

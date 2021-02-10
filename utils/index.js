@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from 'react'
 
-export const SiteName = '老王爱看书'
+export const SiteName = '老王爱看书网'
+export const Description = `${SiteName}，无弹窗小说网，体验超棒小说网，滚动加载小说网，全书小说，玄幻小说，都市小说，科幻小说，热门小说，仙侠小说，历史小说，最新小说`
 export const devHost = 1 ? 'localhost' : '192.168.31.231'
 const productionHost = 'http://localhost:3000/';
 export const IS_DEV = process.env.NODE_ENV === 'development';
@@ -64,15 +65,11 @@ export const usePagination = (data) => {
   }
 }
 
-const NoMoreText = <div className="noMore"></div>
-export const LoadingText = () => {
-  return (
-    <div className="loadingChunk">正在加载中...</div>
-  )
-}
+export const NoMoreText = () => <div className="noMore"></div>
+export const LoadingText = () => <div className="loadingChunk">正在加载中...</div>
 export const useLoading = (loading, hasMore) => {
   return (
-    !hasMore ? NoMoreText : (loading ? <LoadingText /> : null)
+    !hasMore ? <NoMoreText /> : (loading ? <LoadingText /> : null)
   )
 }
 

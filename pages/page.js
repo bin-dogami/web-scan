@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { observer, inject } from 'mobx-react';
-import { scrollIntoViewIfNeeded, scrollIntoView, LoadingText, useLoading, useScrollThrottle, getElementToPageTop } from '@/utils/index'
+import { SiteName, Description, scrollIntoViewIfNeeded, scrollIntoView, LoadingText, NoMoreText, useLoading, useScrollThrottle, getElementToPageTop } from '@/utils/index'
 import { getPageById, getPrevNextMenus } from '@/utils/request'
 
 import Head from 'next/head'
@@ -14,7 +14,6 @@ import Page404 from '@@/404/index'
 
 import styles from '@/styles/Page.module.scss'
 import classnames from 'classnames/bind'
-import { userInfo } from 'os';
 const cx = classnames.bind(styles)
 
 const getNextId = (list, id, isPrev = false, returnIndex) => {
@@ -25,7 +24,7 @@ const getNextId = (list, id, isPrev = false, returnIndex) => {
   const len = list.length
   let i = 0;
   let index = -1
-  while (i < len - 1) {
+  while (i <= len - 1) {
     if (id === list[i].id) {
       index = i
       break
@@ -57,8 +56,14 @@ const useStateRef = (menus, currentId) => {
   return [menusRef, currentIdRef]
 }
 
-const Page = ({ store: { book, common }, data, id }) => {
+const Page = ({ data, id }) => {
   const [page, menuList, recommendBooks] = Array.isArray(data) && data.length >= 3 ? data : [Array.isArray(data) ? data[0] : null, [], []]
+
+  // title
+  const title = page && page.title ? `${page.title}_${page.index > 0 ? '第' + page.index + '章 ' : ''} ${page.mname}_${SiteName}` : SiteName
+  const description = page && page.title ? `${page.title}最新章节阅读，${page.title}是一部${page.typename},由${page.author}创作,${SiteName}提供最新更新章节。${page.index > 0 ? '第' + page.index + '章 ' : ''} ${page.mname}` : Description
+  const keywords = page && page.title ? `${page.title},最新,最新章节,${page.typename},阅读` : SiteName
+
   const [menus, setMenus] = useState(menuList)
   const [currentId, setCurrentId] = useState(id)
   // @TODO: 其他的看是不是还需要扩充一下
@@ -93,8 +98,7 @@ const Page = ({ store: { book, common }, data, id }) => {
     const data = res.data.data;
     const [page] = Array.isArray(data) && data.length ? data : [null]
     if (page) {
-      // @TODO: need test
-      const _list = listRef.current.length > 99 ? [page] : [...listRef.current, page]
+      const _list = [...listRef.current, page]
       listRef.current = _list
       setList(_list)
       toNewId && scrollIntoView(document.querySelector(`#page${id}`))
@@ -121,9 +125,26 @@ const Page = ({ store: { book, common }, data, id }) => {
     return nextId
   }
 
+  const getCurrentIndex = useCallback((list, id) => {
+    const _list = list || menusRef.current
+    const _id = id || currentIdRef.current
+    const len = _list.length
+    let i = 0;
+    let index = -1
+    while (i <= len - 1) {
+      if (_id === _list[i].id) {
+        index = i
+        break
+      }
+      i++
+    }
+    return index
+  }, [])
+
   // 目录弹窗里上下加载更多
   const prevNoMoreRef = useRef(false)
   const nextNoMoreRef = useRef(false)
+  const [nextNoMore, setNextNoMore] = useState(false)
   const menusHttpLoadingRef = useRef(false)
   const [menusHttpLoading, setMenusHttpLoading] = useState(0)
   // 获取目录数据，isPrev 决定目录里是上面的还是下面的要请求，reSetMenus 是根据当前 currentId 重新更新目录数据，有 reSetMenus 的时候 isPrev无用
@@ -150,17 +171,28 @@ const Page = ({ store: { book, common }, data, id }) => {
       data = res.data.data;
     }
 
-    if (Array.isArray(data) && data.length) {
-      setMenus(reSetMenus ? data : (isPrev ? [...data, ...menusRef.current] : [...menusRef.current, ...data]))
+    if (Array.isArray(data)) {
+      data.length && setMenus(reSetMenus ? data : (isPrev ? [...data, ...menusRef.current] : [...menusRef.current, ...data]))
 
       if (reSetMenus) {
-        prevNoMoreRef.current = nextNoMoreRef.current = false
+        const index = getCurrentIndex(data, id)
+        // prev 要少一个
+        if (index !== -1 && index < 24) {
+          prevNoMoreRef.current = true
+        } else if (index >= data.length - 25) {
+          nextNoMoreRef.current = true
+          setNextNoMore(true)
+        } else {
+          prevNoMoreRef.current = nextNoMoreRef.current = false
+          setNextNoMore(false)
+        }
       } else if (data.length < 50) {
         if (isPrev) {
           prevNoMoreRef.current = true
           sideNavRef.current && scrollIntoViewIfNeeded(sideNavRef.current.querySelector(`li[data-id="${id}"]`))
         } else {
           nextNoMoreRef.current = true
+          setNextNoMore(true)
         }
       }
     }
@@ -171,18 +203,8 @@ const Page = ({ store: { book, common }, data, id }) => {
 
   // currentId 变化时探查是否要重新请求目录列表，当前目录到最前/后一个目录时，再请求就没法根据目录列表获取上/下一个目录ID了
   const detectNeedResetMenus = () => {
-    const len = menusRef.current.length
-    let i = 0;
-    let index = -1
-    while (i < len - 1) {
-      if (currentIdRef.current === menusRef.current[i].id) {
-        index = i
-        break
-      }
-      i++
-    }
-    // @TODO: 前几个和后面几个可能都会无意义重复请求
-    if (index === -1 || (index < 10 && !prevNoMoreRef.current) || (index > len - 10 && !nextNoMoreRef.current)) {
+    const index = getCurrentIndex()
+    if (index === -1 || (index < 10 && !prevNoMoreRef.current) || (index > menusRef.current.length - 10 && !nextNoMoreRef.current)) {
       getMenusData(currentIdRef.current, page.novelId, 0, true)
     }
   }
@@ -194,7 +216,7 @@ const Page = ({ store: { book, common }, data, id }) => {
     }
     if (scrollTop < 50) {
       getMenusData(menusRef.current[0].id, page.novelId, 1)
-    } else if (scrollTop + clientHeight >= scrollHeight - 50) {
+    } else if (scrollTop + clientHeight >= scrollHeight - 150) {
       getMenusData(menusRef.current[menusRef.current.length - 1].id, page.novelId, 0)
     }
   }, sideNavRef)
@@ -215,7 +237,8 @@ const Page = ({ store: { book, common }, data, id }) => {
     const toDom = document.querySelector(`#page${id}`)
     toDom ? scrollIntoView(toDom) : toPage(id)
   }
-  const onPrev = id => () => {
+  const onPrev = id => e => {
+    e.preventDefault()
     const prevDom = document.querySelector(`#page${id}`).previousElementSibling
     if (prevDom) {
       scrollIntoView(prevDom)
@@ -224,7 +247,8 @@ const Page = ({ store: { book, common }, data, id }) => {
       prevId && toPage(prevId)
     }
   }
-  const onNext = id => async () => {
+  const onNext = id => async e => {
+    e.preventDefault()
     const nextDom = document.querySelector(`#page${id}`).nextElementSibling
     if (nextDom) {
       const nextId = +nextDom.id.replace('page', '')
@@ -236,7 +260,7 @@ const Page = ({ store: { book, common }, data, id }) => {
       scrollIntoView(document.querySelector('footer'))
       if (id) {
         const nextId = await getNextPageData(id, true)
-        getNextPageData(nextId, false)
+        getNextPageData(nextId)
       } else {
         setHasMore(false)
       }
@@ -268,16 +292,19 @@ const Page = ({ store: { book, common }, data, id }) => {
 
   }
 
-  const onShowMenus = () => {
+  const onShowMenus = e => {
+    e.preventDefault()
     if (!sideNavRef.current) {
       return
     }
 
     sideNavRef.current.style = 'left: 0'
+    document.body.classList.add('oh')
     scrollIntoViewIfNeeded(sideNavRef.current.querySelector('.on'))
   }
   const onHideMenus = () => {
     sideNavRef.current && (sideNavRef.current.style = '')
+    document.body.classList.remove('oh')
   }
   const clickHideMenus = e => {
     e.stopPropagation()
@@ -289,13 +316,13 @@ const Page = ({ store: { book, common }, data, id }) => {
   }
 
   // 滚动时设置 currentId 为当前浏览的页面id
-  const changeCurrentIdWhenScroll = (scrollTop) => {
+  const changeCurrentIdWhenScroll = (scrollTop, clientHeight) => {
     const pages = Array.from(document.querySelectorAll('.pages'))
     while (pages.length) {
       const dom = pages[pages.length - 1]
       const domTop = getElementToPageTop(dom)
       // domTop 还是 scrollTop 似乎有点偏差
-      if (scrollTop > domTop - 150) {
+      if (scrollTop > domTop - clientHeight + 100) {
         dom.id && setCurrentId(+dom.id.replace('page', ''))
         break
       }
@@ -308,7 +335,7 @@ const Page = ({ store: { book, common }, data, id }) => {
     if (!bottomHeightRef.current) {
       bottomHeightRef.current = document.querySelector("#recommendChunk").clientHeight + document.querySelector("#footerChunk").clientHeight
     }
-    changeCurrentIdWhenScroll(scrollTop)
+    changeCurrentIdWhenScroll(scrollTop, clientHeight)
     if (scrollTop + clientHeight >= scrollHeight - bottomHeightRef.current) {
       const pages = document.querySelectorAll('.pages')
       const lastPage = pages.length ? pages[pages.length - 1] : null
@@ -343,7 +370,9 @@ const Page = ({ store: { book, common }, data, id }) => {
   return (
     <>
       <Head>
-        <title>分类</title>
+        <title>{title}</title>
+        <meta name="description" content={description}></meta>
+        <meta name="keywords" content={keywords}></meta>
       </Head>
       <Top noH1={true} />
       <Search />
@@ -355,19 +384,28 @@ const Page = ({ store: { book, common }, data, id }) => {
             <header className="header crumbs">
               <strong><Link href="/" title="首页">首页</Link></strong>
               <span>/</span>
-              <strong><Link as={`/book/${page.novelId}`} href={`/book?id=${page.novelId}`} title={page.novelName}>{page.novelName}</Link></strong>
+              <strong><Link as={`/book/${page.novelId}`} href={`/book?id=${page.novelId}`} title={page.title}>{page.title}</Link></strong>
               <span>/</span>
               <h1>{page.mname}</h1>
             </header>
             <div className={reGetPageloading ? 'loadingOnWrapper pagesWrapper' : 'pagesWrapper'}>
               {list.map((page, index) => {
+                const prevId = getNextId(menus, page.id, true)
+                const nextId = getNextId(menus, page.id, false)
+
                 return (
                   <article key={`${page.id}`} className={`pages ${styles.page}`} id={`page${page.id}`}>
                     <div className={styles.pageSetting}>
                       <div className={styles.pageChange}>
-                        <a className="menusHidePrevent" onClick={onShowMenus} title="章节列表">章节列表</a>
-                        <a className={cx({ borderRight: true, disabled: page.index === 0 })} onClick={onPrev(page.id)}>上一章</a>
-                        <a onClick={onNext(page.id)}>下一章</a>
+                        <a href={`/book/${page.novelId}`} className="menusHidePrevent" onClick={onShowMenus} title="章节列表">章节列表</a>
+                        {prevId ?
+                          <a href={`/page/${prevId}`} className={cx({ borderRight: true })} onClick={onPrev(page.id)}>上一章</a> :
+                          <span className={cx({ borderRight: true, disabled: true })}>前面没了</span>
+                        }
+                        {nextId ?
+                          <a href={`/page/${nextId}`} onClick={onNext(page.id)}>下一章</a> :
+                          <span onClick={onNext(page.id)}>后面没了</span>
+                        }
                       </div>
                       <div className={styles.setting}>
                         <span onClick={onBig(page.id)} className={cx({ borderRight: true, disabled: fontSizeList.indexOf(fontSizeClass) > fontSizeList.length - 2 })}>字号加大</span>
@@ -389,7 +427,7 @@ const Page = ({ store: { book, common }, data, id }) => {
               })}
             </div>
           </article>
-          {LoadingChunk}
+          <div className={page.isComplete ? "pageLoading completeBook" : "pageLoading"}>{LoadingChunk}</div>
           <article className="chunkShadow sideNav menusHidePrevent navTransition" ref={sideNavRef}>
             <header>
               <h2>章节列表</h2>
@@ -402,6 +440,7 @@ const Page = ({ store: { book, common }, data, id }) => {
                 </li>
               ))}
             </ul>
+            {nextNoMore ? <NoMoreText /> : null}
             {menusHttpLoading === 1 ? <LoadingText /> : null}
           </article>
           <Recommends data={recommendBooks} />

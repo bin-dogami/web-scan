@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { observer, inject } from 'mobx-react';
-import { devHost, useHttping, usePagination, usePaginationDrops, scrollIntoView } from '@/utils/index'
+import { SiteName, Description, devHost, useHttping, usePagination, usePaginationDrops, scrollIntoView } from '@/utils/index'
 import { getBookById, getMenusByBookId } from '@/utils/request'
 import * as dayjs from 'dayjs'
 
@@ -11,6 +11,7 @@ import Nav from '@@/nav/index'
 import Footer from '@@/footer/index'
 import Recommends from "@@/recommends/index";
 import Link from '@@/link/index'
+import Page404 from '@@/404/index'
 
 import styles from '@/styles/Book.module.scss'
 import classnames from 'classnames/bind'
@@ -22,8 +23,8 @@ const realRequestNum = 100
 const useStateRef = (pageIndex, isDesc, pageSize, triggerHttp) => {
   // 每次请求limit 的 start
   const httpStartRef = useRef(0)
-  const pageIndexRef = useRef(0)
-  const isDescRef = useRef(false)
+  const pageIndexRef = useRef(pageIndex)
+  const isDescRef = useRef(isDesc)
   const [oppositePageSize, setOppositePageSize] = useState(0)
   const pageSizeRef = useRef(0)
   const triggerHttpRef = useRef(0)
@@ -31,10 +32,6 @@ const useStateRef = (pageIndex, isDesc, pageSize, triggerHttp) => {
   useEffect(() => {
     pageIndexRef.current = pageIndex
   }, [pageIndex])
-
-  useEffect(() => {
-    isDescRef.current = isDesc
-  }, [isDesc])
 
   useEffect(() => {
     pageSizeRef.current = pageSize
@@ -48,18 +45,34 @@ const useStateRef = (pageIndex, isDesc, pageSize, triggerHttp) => {
   return [httpStartRef, pageIndexRef, isDescRef, oppositePageSize, pageSizeRef, triggerHttpRef]
 }
 
-const Book = ({ store: { book, common }, data, id }) => {
+const getDescription = (novel) => {
+  if (novel && novel.title) {
+    let description = novel.title
+    description += `,${novel.title}小说阅读。`
+    description += `${novel.typename}${novel.title}由作家${novel.author}创作，${SiteName}提供${novel.title}最新章节及章节列表，${novel.title}最新更新尽在${SiteName}`
+    return description
+  }
+
+  return Description
+}
+
+const Book = ({ store: { common }, data, id, page, skip }) => {
   const [novel, list, DescMenus, total, recommendBooks] = Array.isArray(data) && data.length >= 5 ? data : [{}, [], [], 0, []]
+
+  // title
+  const title = novel && novel.title ? `《${novel.title}》_${novel.author}著_${novel.typename}${novel.isComplete ? '全本小说_' : ''}_${SiteName}` : SiteName
+  const description = getDescription(novel)
 
   const lastMenu = DescMenus.length ? DescMenus[0] : (list.length ? list[list.length - 1] : {})
 
   const [triggerHttp, setTriggerHttp] = useState(0)
   const cachedMenusObj = useRef({
-    0: list
+    [skip / realRequestNum]: list
   })
-  const [menusList, setMenusList] = useState(list.slice(0, defaultPageSize))
+  const start = page % (realRequestNum / defaultPageSize) * defaultPageSize
+  const [menusList, setMenusList] = useState(list.slice(start, start + defaultPageSize))
   // 目录当前在第几页
-  const [pageIndex, setPageIndex] = useState(0)
+  const [pageIndex, setPageIndex] = useState(page)
   // 倒序
   const [isDesc, setIsDesc] = useState(0)
   // 每页章数
@@ -68,9 +81,8 @@ const Book = ({ store: { book, common }, data, id }) => {
   const menuOptions = usePaginationDrops(total, isDesc, pageSize)
   // 创建相关ref
   const [httpStartRef, pageIndexRef, isDescRef, oppositePageSize, pageSizeRef, triggerHttpRef] = useStateRef(pageIndex, isDesc, pageSize, triggerHttp)
-  // @TODO: useCallback
   // 每页目录数切换
-  const onSetPageSize = () => {
+  const onSetPageSize = useCallback(() => {
     const size = pageSize === defaultPageSize ? oppositeDefaultPageSize : defaultPageSize
     pageIndexRef.current = 0
     setPageIndex(0)
@@ -79,12 +91,13 @@ const Book = ({ store: { book, common }, data, id }) => {
     setPageSize(size)
     // 重新请求
     setTriggerHttp(triggerHttpRef.current + 1)
-  }
+  }, [pageSize])
   // 正序 => 倒序
   const onDesc = useCallback(() => {
     setPageIndex(0)
     isDescRef.current = +(!isDescRef.current)
     setIsDesc(isDescRef.current)
+    cachedMenusObj.current = {}
     setTriggerHttp(triggerHttpRef.current + 1)
   }, [])
   const pageChange = useCallback(next => {
@@ -93,8 +106,10 @@ const Book = ({ store: { book, common }, data, id }) => {
     }
     httpStartRef.current = Math.floor(next / (realRequestNum / pageSizeRef.current))
     const cachedMenusList = cachedMenusObj.current[httpStartRef.current]
+    console.log(next, httpStartRef.current, cachedMenusList, cachedMenusObj)
     if (cachedMenusList) {
       const start = next % (realRequestNum / pageSizeRef.current) * pageSizeRef.current
+      console.log(start, pageSizeRef.current)
       cachedMenusList && setMenusList(cachedMenusList.slice(start, start + pageSizeRef.current))
     } else {
       // 请求数据
@@ -109,10 +124,13 @@ const Book = ({ store: { book, common }, data, id }) => {
   }, [pageChange])
   // 上一页
   const onPrev = useCallback(e => {
+    e.preventDefault()
     pageChange(pageIndex - 1)
   }, [pageIndex, pageChange])
   // 下一页
   const onNext = useCallback(e => {
+    // a 链接的跳转和 js 跳转共存会引起pageIndex错乱，然后跳转前js 更新的数据和跳转后的数据不一样，但其实是没问题的
+    e.preventDefault()
     if (pageIndex + 1 < menuOptions.length) {
       pageChange(pageIndex + 1)
     }
@@ -160,145 +178,163 @@ const Book = ({ store: { book, common }, data, id }) => {
   return (
     <>
       <Head>
-        <title>11111</title>
+        <title>{title}</title>
+        <meta name="description" content={description}></meta>
+        <meta name="keywords" content={novel && novel.title || SiteName}></meta>
       </Head>
       <Top noH1={true} />
       <Search />
       <Nav />
-      <article className="chunkShadow">
-        <header className="header crumbs">
-          <strong><Link href="/" title="首页">首页</Link></strong>
-          <span>/</span>
-          <strong>{novel.title}</strong>
-        </header>
-        <article className={styles.book}>
-          <header className="commonHeader">
-            <h1>{novel.title}</h1>
-          </header>
-          <div className={styles.detail}>
-            <div className={styles.thumb}>
-              <img src={`http://${devHost}:3011/${novel.thumb}`} alt={novel.title} title={novel.title} />
-            </div>
-            <div className={styles.info}>
-              <header>
-                <h3>
-                  作者：
-                  <a href="" title={`作者：${novel.author}`} className={styles.author}>
-                    {novel.author}
-                  </a>
-                </h3>
-              </header>
-              <ul>
-                <li>
-                  <strong>
-                    类别：
-                    <Link href={`/types/${novel.typeid}`}>
-                      {novel.typeName}
-                    </Link>
-                  </strong>
-                </li>
-                <li>
-                  <strong>状态：
-                    {novel.isComplete ?
-                      <Link href='/complete'>
-                        全本
-                      </Link> : '连载'}
-                  </strong>
-                </li>
-                <li><strong>更新时间：{dayjs(novel.updatetime).format('YYYY-MM-DD HH:mm')}</strong></li>
-                <li>
-                  <strong>
-                    最新章节：
-                    {lastMenu && lastMenu.id ?
-                      <Link as={`/page/${lastMenu.id}`} href={`/page?id=${lastMenu.id}`}>
-                        {lastMenu.mname}
-                      </Link> : ''
-                    }
-                  </strong>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className={styles.btn}>
-            {menusList.length ?
-              <Link as={`/page/${menusList[0].id}`} href={`/page?id=${menusList[0].id}`}>
-                开始阅读
-              </Link> :
-              null}
-            <span className={styles.collectBook} onClick={onCollectBook}>收藏本书</span>
-            <span className={styles.goBottom} onClick={onGoBottom}>直达底部</span>
-          </div>
-          <div className={styles.description}>
-            <strong>简介：</strong>{(novel.description || '').trim()}
-          </div>
-        </article>
-        <section>
-          <header className="hide">
-            <h2>
-              {novel.title}章节列表
-            </h2>
-          </header>
-          {DescMenus.length && !isDesc ?
-            <article className={styles.menusWrapper}>
-              <header className={styles.menusHeader}>
-                <h3>
-                  {novel.title.length < 10 ? `${novel.title} · 最新章节` : '最新章节'}
-                </h3>
-                <span onClick={onDesc}>更多 (倒序)</span>
-              </header>
-              <ul className={cx({ menuList: true, descList: true })}>
-                {DescMenus.map(({ id, mname, index }) => (
-                  <li key={id}>
-                    <Link as={`/page/${id}`} href={`/page?id=${id}`} title={index > 0 ? `第${index}章` : ''}>
-                      <span>{index > 0 ? `第${index}章` : ''}</span><strong>{mname}</strong>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </article> : null
-          }
-          <article className={styles.menusWrapper} id="menus">
-            <header className={styles.menusHeader}>
-              <h3>
-                {novel.title.length < 10 ? `${novel.title} · 正文章节` : '正文章节'}
-              </h3>
-              {/* {isDesc ? <span onClick={onDesc}>正序</span> : null} */}
-              <span onClick={onSetPageSize}>每页 {oppositePageSize} 章</span>
+      {!novel ?
+        <Page404>找不到这本书哦!</Page404> :
+        <>
+          <article className="chunkShadow">
+            <header className="header crumbs">
+              <strong><Link href="/" title="首页">首页</Link></strong>
+              <span>/</span>
+              <strong>{novel.title}</strong>
             </header>
-            <div className={loading ? 'loadingOnWrapper' : ''}>
-              <ul className={cx({ menuList: true, fixBlank: menusList.length % 2 !== 0 })}>
-                {menusList.map(({ id, mname, index }) => (
-                  <li key={id}>
-                    <Link as={`/page/${id}`} href={`/page?id=${id}`} title={index > 0 ? `第${index}章` : ''}>
-                      <span className={cx({ mr10: index > 0 })}>{index > 0 ? `第${index}章` : ''}</span><strong>{mname}</strong>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <article className={styles.book}>
+              <header className="commonHeader">
+                <h1>{novel.title}</h1>
+              </header>
+              <div className={styles.detail}>
+                <div className={styles.thumb}>
+                  <img src={`http://${devHost}:3011/${novel.thumb}`} alt={novel.title} title={novel.title} />
+                </div>
+                <div className={styles.info}>
+                  <header>
+                    <h3>
+                      作者：
+                  <a href="" title={`作者：${novel.author}`} className={styles.author}>
+                        {novel.author}
+                      </a>
+                    </h3>
+                  </header>
+                  <ul>
+                    <li>
+                      <strong>
+                        类别：
+                    <Link href={`/types/${novel.typeid}`}>
+                          {novel.typename}
+                        </Link>
+                      </strong>
+                    </li>
+                    <li>
+                      <strong>状态：
+                    {novel.isComplete ?
+                          <Link href='/complete'>
+                            全本
+                      </Link> : '连载'}
+                      </strong>
+                    </li>
+                    <li><strong>更新时间：{dayjs(novel.updatetime).format('YYYY-MM-DD HH:mm')}</strong></li>
+                    <li>
+                      <strong>
+                        最新章节：
+                    {lastMenu && lastMenu.id ?
+                          <Link as={`/page/${lastMenu.id}`} href={`/page?id=${lastMenu.id}`}>
+                            {lastMenu.mname}
+                          </Link> : ''
+                        }
+                      </strong>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div className={styles.btn}>
+                {menusList.length ?
+                  <Link as={`/page/${menusList[0].id}`} href={`/page?id=${menusList[0].id}`}>
+                    开始阅读
+              </Link> :
+                  null}
+                <span className={styles.collectBook} onClick={onCollectBook}>收藏本书</span>
+                <span className={styles.goBottom} onClick={onGoBottom}>直达底部</span>
+              </div>
+              <div className={styles.description}>
+                <strong>简介：</strong>{(novel.description || '').trim()}
+              </div>
+            </article>
+            <section>
+              <header className="hide">
+                <h2>
+                  {novel.title}章节列表
+            </h2>
+              </header>
+              {DescMenus.length && !isDesc ?
+                <article className={styles.menusWrapper}>
+                  <header className={styles.menusHeader}>
+                    <h3>
+                      {novel.title.length < 10 ? `${novel.title} · 最新章节` : '最新章节'}
+                    </h3>
+                    <span onClick={onDesc}>更多 (倒序)</span>
+                  </header>
+                  <ul className={cx({ menuList: true, descList: true })}>
+                    {DescMenus.map(({ id, mname, index }) => (
+                      <li key={id}>
+                        <Link as={`/page/${id}`} href={`/page?id=${id}`} title={index > 0 ? `第${index}章 ${mname}` : mname}>
+                          <span>{index > 0 ? `第${index}章` : ''}</span><strong>{mname}</strong>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </article> : null
+              }
+              <article className={styles.menusWrapper} id="menus">
+                <header className={styles.menusHeader}>
+                  <h3>
+                    {novel.title.length < 10 ? `${novel.title} · 正文章节` : '正文章节'}
+                  </h3>
+                  {/* {isDesc ? <span onClick={onDesc}>正序</span> : null} */}
+                  <span onClick={onSetPageSize}>每页 {oppositePageSize} 章</span>
+                </header>
+                <div className={loading ? 'loadingOnWrapper' : ''}>
+                  <ul className={cx({ menuList: true, fixBlank: menusList.length % 2 !== 0 })}>
+                    {menusList.map(({ id, mname, index }) => (
+                      <li key={id}>
+                        <Link as={`/page/${id}`} href={`/page?id=${id}`} title={index > 0 ? `第${index}章 ${mname}` : mname}>
+                          <span className={cx({ mr10: index > 0 })}>{index > 0 ? `第${index}章` : ''}</span><strong>{mname}</strong>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </article>
+              <div className={styles.pageChange}>
+                {
+                  pageIndex === 0 ?
+                    <span className={styles.disabled}>前面没了</span> :
+                    <a href={`/book/${id}?page=${pageIndex - 1}`} className={cx({ loading, prev: true })} onClick={onPrev}><i></i>上一页</a>
+                }
+                <select value={pageIndex} onChange={onPageChange}>
+                  {menuOptions.map((v, index) => (
+                    <option key={v} value={index} disabled={loading}>{v}章</option>
+                  ))}
+                </select>
+                {
+                  pageIndex === menuOptions.length - 1 ?
+                    <span className={styles.disabled}>后面没了</span> :
+                    <a href={`/book/${id}?page=${pageIndex + 1}`} className={cx({ loading, next: true })} onClick={onNext}>下一页<i></i></a>
+                }
+              </div>
+            </section>
           </article>
-          <div className={styles.pageChange}>
-            <span className={cx({ disabled: loading || pageIndex === 0 })} onClick={onPrev}>{pageIndex === 0 ? '前面没了' : <>&lt;上一页</>}</span>
-            <select value={pageIndex} onChange={onPageChange}>
-              {menuOptions.map((v, index) => (
-                <option key={v} value={index} disabled={loading}>{v}章</option>
-              ))}
-            </select>
-            <span className={cx({ disabled: loading || pageIndex === menuOptions.length - 1 })} onClick={onNext}>{pageIndex === menuOptions.length - 1 ? '后面没了' : <>下一页 &gt;</>}</span>
-          </div>
-        </section>
-      </article>
-      <Recommends data={recommendBooks} />
-      <Footer />
+          <Recommends data={recommendBooks} />
+          <Footer />
+        </>
+      }
     </>
   )
 }
 
 export async function getServerSideProps ({ query }) {
   const id = query.id && +query.id || 0
-  const res = await getBookById(id)
+  const page = query.page && +query.page || 0
+  const skip = Math.floor(page / (realRequestNum / defaultPageSize)) * realRequestNum
+  console.log(skip)
+  const res = await getBookById(id, skip)
   const data = res.data.data
-  return { props: { data, id } }
+  return { props: { data, id, page, skip } }
 }
 
 export default inject('store')(observer(Book))

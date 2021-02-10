@@ -24,6 +24,7 @@ export default class TypesStore {
   }
 
   setStart (start) {
+    console.log('start', start)
     this.start = start
   }
 }

@@ -259,6 +259,14 @@ input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
   display: none;
 }
 
+// 为了SEO
+.notShow {
+  height: 0;
+  font-size: 0;
+  line-height: 0;
+  overflow: hidden;
+}
+
 .chunkShadow {
   box-shadow: 0 0 5px 1px rgba(0, 0, 0, .05);
 }
@@ -443,6 +451,10 @@ footer  {
   z-index: 90;
   padding: 16px 0;
 
+  .noMore:after {
+    background-color: #fff;
+  }
+
   h2 {
     font-size: 16px;
     text-align: center;
@@ -556,6 +568,22 @@ footer  {
   }
 }
 
+.pageLoading {
+  .noMore {
+    &:after {
+      content: '最新章节还没出哦～';
+    }
+  }
+}
+
+.completeBook {
+  .noMore {
+    &:after {
+      content: '全书完，感谢您对本站支持～';
+    }
+  }
+}
+
 .page404 {
   margin: 30px;
   text-align: center;
@@ -569,4 +597,8 @@ footer  {
 
 .navTransition {
   transition: left 0.3s ease-out;
+}
+
+.oh {
+  overflow: hidden;
 }
