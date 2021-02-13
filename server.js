@@ -8,7 +8,7 @@ const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
 
-const hasParamsPath = ['complete', 'types', 'book', 'author', 'page', 'hot', 'complete']
+const hasParamsPath = ['complete', 'types', 'book', 'author', 'page', 'hot', 'complete', 'search']
 
 app.prepare().then(() => {
   createServer((req, res) => {

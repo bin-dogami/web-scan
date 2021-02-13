@@ -7,6 +7,7 @@
   font-size: 14px;
   background-color: #fff;
   margin-bottom: 1px; /*no*/
+  position: relative;
 
   a {
     white-space: nowrap;
@@ -29,6 +30,26 @@
   }
 
   .half {
-    max-width: 50%;
+    max-width: 60%;
+  }
+
+  .title.half {
+    max-width: 40%;
+  }
+
+  .new {
+    color: #f7700f;
+    padding-right: 16px;
+
+    &:after {
+      content: '';
+      position: absolute;
+      top: 12px;
+      right: 10px;
+      width: 18px;
+      height: 18px;
+      background: url(../../styles/images/new.png) no-repeat;
+      background-size: 100%;
+    }
   }
 }

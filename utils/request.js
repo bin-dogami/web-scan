@@ -9,6 +9,41 @@ export const getIndexData = async () => {
   })
 }
 
+export const getBooksLastPageByIds = async (ids) => {
+  return await axios({
+    url: `${BASE_URL}scan/getBooksLastPageByIds`,
+    method: 'get',
+    params: {
+      ids
+    },
+    errorTitle: '获取书本信息错误',
+  })
+}
+
+export const getBookBySearch = async (name, id) => {
+  return await axios({
+    url: `${BASE_URL}scan/getBookBySearch`,
+    method: 'get',
+    params: {
+      id,
+      name
+    },
+    errorTitle: '查询书本信息错误',
+  })
+}
+
+export const getBookByName = async (name, id) => {
+  return await axios({
+    url: `${BASE_URL}scan/getBookByName`,
+    method: 'get',
+    params: {
+      id,
+      name
+    },
+    errorTitle: '查询书本信息错误',
+  })
+}
+
 export const getTypesData = async (id, skip, size = 20) => {
   return await axios({
     url: `${BASE_URL}scan/getTypesData`,
@@ -107,5 +142,16 @@ export const getPrevNextMenus = async (id, novelId, isPrev = 0) => {
       isPrev
     },
     errorTitle: '获取目录信息错误',
+  })
+}
+
+export const getAuthorData = async (id) => {
+  return await axios({
+    url: `${BASE_URL}scan/getAuthorData/`,
+    method: 'get',
+    params: {
+      id
+    },
+    errorTitle: '获取作者书本列表错误',
   })
 }

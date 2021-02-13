@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { observer, inject } from 'mobx-react';
-import { useHttping, usePagination, useLoading, useScrollThrottle } from '@/utils/index'
+import { useLoading, useScrollThrottle } from '@/utils/index'
 // 其实一个接口就行了，懒得改了
 import { getTypesData, getBooksByType } from '@/utils/request'
 
@@ -17,12 +17,15 @@ const cx = classnames.bind(styles)
 
 // @TODO:
 const pageSize = 5
+// 切换type类型时缓存一下数据
+const cachedTypes = {}
 const Types = ({ data, id, page }) => {
   const _data = typeof data === 'object' ? data : {}
   _data.types = Array.isArray(_data.types) ? _data.types : []
   const list = Array.isArray(_data.list) ? _data.list : []
   const types = [{ id: 0, name: '全部分类' }, ..._data.types]
 
+  const [currentTypeName, setCurrentTypeName] = useState('')
   const [typeValue, setTypeValue] = useState(id)
   const typeValueRef = useRef(typeValue)
   const [novels, setNovels] = useState(list)
@@ -43,7 +46,6 @@ const Types = ({ data, id, page }) => {
     loadingRef.current = true
     setLoading(true)
 
-    console.log(startRef.current)
     const res = await getBooksByType(typeValueRef.current, startRef.current * pageSize, pageSize)
     const list = Array.isArray(res.data.data) ? res.data.data : []
     const newNovels = startRef.current ? [...novelsRef.current, ...list] : list
@@ -52,10 +54,12 @@ const Types = ({ data, id, page }) => {
     if (list.length < pageSize) {
       hasMoreRef.current = false
       setHasMore(false)
+      cachedTypes[typeValueRef.current] = [JSON.parse(JSON.stringify(newNovels)), startRef.current, false]
     } else {
       const nextStart = startRef.current + 1
       startRef.current = nextStart
       setStart(nextStart)
+      cachedTypes[typeValueRef.current] = [JSON.parse(JSON.stringify(newNovels)), nextStart, hasMoreRef.current]
     }
 
     loadingRef.current = false
@@ -66,11 +70,22 @@ const Types = ({ data, id, page }) => {
     e.preventDefault()
     typeValueRef.current = id
     setTypeValue(id)
-    startRef.current = 0
-    setStart(0)
-    hasMoreRef.current = true
+    if (cachedTypes[id]) {
+      const [newNovels, newStart, newHasMore] = cachedTypes[id]
+      novelsRef.current = newNovels
+      setNovels(newNovels)
+      startRef.current = newStart
+      setStart(newStart)
+      hasMoreRef.current = newHasMore
+      setHasMore(newHasMore)
+    } else {
+      startRef.current = 0
+      setStart(0)
+      hasMoreRef.current = true
+      getData()
+    }
+
     window && window.history.replaceState(null, null, window.location.href.replace(/types\/.*$/, `types/${id}`))
-    getData()
   }
 
   useScrollThrottle((scrollTop, clientHeight, scrollHeight) => {
@@ -79,22 +94,34 @@ const Types = ({ data, id, page }) => {
     }
   })
 
+  useEffect(() => {
+    types.forEach((item) => {
+      if (item.id === typeValue) {
+        setCurrentTypeName(item.name)
+      }
+    })
+  }, [typeValue])
+
+  useEffect(() => {
+    cachedTypes[id] = [novels, start, hasMore]
+  }, [])
+
   return (
     <>
       <Head>
         <title>分类</title>
       </Head>
-      <Top />
+      <Top noH1={true} />
       <Search />
       <Nav />
       <header className="header crumbs">
         <strong><Link href="/" title="首页">首页</Link></strong>
         <span>/</span>
-        <strong>分类</strong>
+        <h1>{currentTypeName || '全部分类小说'}</h1>
       </header>
       <div className={`types ${styles.types}`}>
         {types.map(({ id, name }, index) => (
-          <a href={`/types/${typeValue}`} key={index} className={cx({ on: id === typeValue })} onClick={onChangeType(id)}>{name.replace('小说', '')}</a>
+          <a href={`/types/${id}`} key={index} className={cx({ on: id === typeValue })} onClick={onChangeType(id)}>{name.replace('小说', '')}</a>
         ))}
       </div>
       <BookList books={novels} />

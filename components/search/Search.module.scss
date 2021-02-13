@@ -2,9 +2,12 @@
   display: flex;
   align-items: center;
   margin: 15px 16px;
+  position: relative;
+  z-index: 100;
 
   .searchBtn {
     flex: 1;
+    position: relative;
 
     label {
       display: none;
@@ -13,9 +16,9 @@
     input {
       width: 100%;
       height: 40px;
-      font-size: 14px;
+      font-size: 16px;
       line-height: 40px;
-      padding: 0 12px;
+      padding: 0 40px 0 16px;
       color: #333;
       border: 1px solid #ffd5a0;
       border-right: none;
@@ -23,6 +26,21 @@
       box-sizing: border-box;
       box-shadow: 0 0 2px 0px #ffd5a0 inset;
       color: #555;
+    }
+
+    .close {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 36px;
+      height: 40px;
+      background: url(../../styles/images/close.png) no-repeat center;
+      background-size: 18px;
+      display: none;
+    }
+
+    .show {
+      display: block;
     }
   }
 
@@ -34,6 +52,53 @@
     color: #f7700f;
     font-size: 16px;
     text-shadow: 0 0 1px #f7700f;
+  }
+
+  ul {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 5px;
+    background-color: #fff;
+    border-radius: 3px;
+    border: 1px solid #eaeaea;
+    padding: 10px 0;
+    box-shadow: 0 0 5px 0px #ddd;
+    max-height: 200px;
+    overflow-y: auto;
+
+    .loading {
+      justify-content: center;
+    }
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      line-height: 36px;
+      font-size: 16px;
+      padding: 0 16px;
+
+      strong, span {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      strong {
+        width: 60%;
+        padding-right: 20px;
+        font-size: 16px;
+        font-weight: normal;
+        color: #f7700f;
+      }
+
+      span {
+        width: 40%;
+        font-size: 14px;
+      }
+    }
+
   }
 }
 

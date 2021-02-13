@@ -127,7 +127,6 @@
     padding: 0;
     top: -1px;
     line-height: 100px;
-    overflow: hidden;
   }
 
   a:last-child {
@@ -152,11 +151,15 @@
     padding: 0;
     top: -1px;
     line-height: 100px;
-    overflow: hidden;
   }
 
   span:first-child {
     padding-left: 0;
+  }
+
+  span:nth-child(2) {
+    padding-right: 0;
+    margin-right: 10px;
   }
 
   .disabled {

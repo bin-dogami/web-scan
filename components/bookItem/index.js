@@ -6,7 +6,7 @@ const cx = classnames.bind(styles);
 import { devHost } from "@/utils/index";
 import Link from '@@/link/index'
 
-const BookItem = ({ store: { common }, data: { id, title, author, description, thumb } }) => {
+const BookItem = ({ store: { common }, data: { id, title, author, authorId, description, thumb } }) => {
   // const toBookPage = e => {
   //   e.preventDefault()
   // }
@@ -30,9 +30,7 @@ const BookItem = ({ store: { common }, data: { id, title, author, description, t
               {title}
             </Link>
           </h3>
-          <a href="" title={`作者：${author}`} className={styles.author}>
-            {author}
-          </a>
+          <Link as={`/author/${authorId}`} href={`/author?id=${authorId}`} title={`作者：${author}`} className={styles.author}>{author}</Link>
         </header>
         <p className={styles.description}>
           <Link as={`/book/${id}`} href={`/types?id=${id}`}>

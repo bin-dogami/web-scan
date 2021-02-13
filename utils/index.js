@@ -1,8 +1,9 @@
 import { useRef, useState, useEffect } from 'react'
+import { getBooksLastPageByIds } from './request'
 
 export const SiteName = '老王爱看书网'
 export const Description = `${SiteName}，无弹窗小说网，体验超棒小说网，滚动加载小说网，全书小说，玄幻小说，都市小说，科幻小说，热门小说，仙侠小说，历史小说，最新小说`
-export const devHost = 1 ? 'localhost' : '192.168.31.231'
+export const devHost = 1 ? '192.168.199.226' : '192.168.31.231'
 const productionHost = 'http://localhost:3000/';
 export const IS_DEV = process.env.NODE_ENV === 'development';
 export const BASE_URL = IS_DEV ? `http://${devHost}:3000/` : productionHost;
@@ -163,4 +164,26 @@ export const useScrollThrottle = (fn, domRef) => {
       }
     }
   }, [])
+}
+
+// 阅读历史
+export const getBookLastPageByIds = async (ids, list) => {
+  const copyList = JSON.parse(JSON.stringify(list))
+  if (!ids || !ids.length) {
+    return copyList
+  }
+  const res = await getBooksLastPageByIds(ids)
+  const data = Array.isArray(res.data.data) ? res.data.data : []
+  data.map(({ novelId, id, mname, index }) => {
+    for (const item of copyList) {
+      if (item.id === novelId) {
+        item.lastId = id
+        item.lastName = mname
+        item.lastIndex = index
+        item.isNew = true
+        break
+      }
+    }
+  })
+  return copyList
 }

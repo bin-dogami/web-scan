@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { observer, inject } from 'mobx-react';
-import { SiteName, Description, scrollIntoViewIfNeeded, scrollIntoView, LoadingText, NoMoreText, useLoading, useScrollThrottle, getElementToPageTop } from '@/utils/index'
+import { SiteName, Description, scrollIntoViewIfNeeded, scrollIntoView, LoadingText, NoMoreText, useLoading, useScrollThrottle, throttle, getElementToPageTop } from '@/utils/index'
+import { WebStorage, MenusHideKey, SettingHideKey } from '@/utils/webStorage'
 import { getPageById, getPrevNextMenus } from '@/utils/request'
 
 import Head from 'next/head'
@@ -41,9 +42,10 @@ const getNextId = (list, id, isPrev = false, returnIndex) => {
   return next ? next.id : 0
 }
 
-const useStateRef = (menus, currentId) => {
+const useStateRef = (menus, currentId, hasMore) => {
   const menusRef = useRef(menus)
   const currentIdRef = useRef(currentId)
+  const hasMoreRef = useRef(hasMore)
 
   useEffect(() => {
     menusRef.current = menus
@@ -53,21 +55,23 @@ const useStateRef = (menus, currentId) => {
     currentIdRef.current = currentId
   }, [currentId])
 
-  return [menusRef, currentIdRef]
+  useEffect(() => {
+    hasMoreRef.current = hasMore
+  }, [hasMore])
+
+  return [menusRef, currentIdRef, hasMoreRef]
 }
 
 const Page = ({ data, id }) => {
   const [page, menuList, recommendBooks] = Array.isArray(data) && data.length >= 3 ? data : [Array.isArray(data) ? data[0] : null, [], []]
 
   // title
-  const title = page && page.title ? `${page.title}_${page.index > 0 ? '第' + page.index + '章 ' : ''} ${page.mname}_${SiteName}` : SiteName
+  const title = page && page.title ? `${page.title}_${page.index > 0 ? '第' + page.index + '章 ' : ''} ${page.mname}_${SiteName}_免费看小说` : `${SiteName}_免费看小说`
   const description = page && page.title ? `${page.title}最新章节阅读，${page.title}是一部${page.typename},由${page.author}创作,${SiteName}提供最新更新章节。${page.index > 0 ? '第' + page.index + '章 ' : ''} ${page.mname}` : Description
   const keywords = page && page.title ? `${page.title},最新,最新章节,${page.typename},阅读` : SiteName
 
   const [menus, setMenus] = useState(menuList)
   const [currentId, setCurrentId] = useState(id)
-  // @TODO: 其他的看是不是还需要扩充一下
-  const [menusRef, currentIdRef] = useStateRef(menus, currentId)
   const [list, setList] = useState(page ? [page] : [])
   const listRef = useRef(list)
   const [hasMore, setHasMore] = useState(true)
@@ -80,6 +84,8 @@ const Page = ({ data, id }) => {
   // 这个 loading 给上一页或点击目录里链接时用的
   const [reGetPageloading, setReGetPageloading] = useState(false)
   const reGetPageloadingRef = useRef(reGetPageloading)
+  // @TODO: 其他的看是不是还需要扩充一下
+  const [menusRef, currentIdRef, hasMoreRef] = useStateRef(menus, currentId, hasMore)
 
   // 获取 page 数据
   const getData = useCallback(async (id, toNewId = true, reGetting = false) => {
@@ -292,27 +298,19 @@ const Page = ({ data, id }) => {
 
   }
 
-  const onShowMenus = e => {
-    e.preventDefault()
+  const onShowMenus = (e, left) => {
+    e && e.preventDefault()
     if (!sideNavRef.current) {
       return
     }
 
-    sideNavRef.current.style = 'left: 0'
+    sideNavRef.current.style = left ? `left: -${left}%` : 'left: 0'
     document.body.classList.add('oh')
     scrollIntoViewIfNeeded(sideNavRef.current.querySelector('.on'))
   }
   const onHideMenus = () => {
     sideNavRef.current && (sideNavRef.current.style = '')
     document.body.classList.remove('oh')
-  }
-  const clickHideMenus = e => {
-    e.stopPropagation()
-    if (e.target.classList.contains('menusHidePrevent')) {
-      return false
-    }
-
-    onHideMenus()
   }
 
   // 滚动时设置 currentId 为当前浏览的页面id
@@ -348,24 +346,124 @@ const Page = ({ data, id }) => {
     getNextPageData()
   }, [])
 
+  const storeViewHistory = () => {
+    const [page] = listRef.current.filter((page) => page.id === currentId)
+    if (page) {
+      const { novelId, index, id, title, mname } = page
+      WebStorage.storeBookLastReadMenu({
+        id: novelId,
+        title,
+        pageId: id,
+        pageName: mname,
+        index,
+        isLast: !hasMoreRef.current
+      })
+    }
+  }
+
   useEffect(() => {
     window && window.history.replaceState(null, null, window.location.href.replace(/page\/[^\/]+/, `page/${currentId}`))
+
+    // 存 storage 里
+    storeViewHistory()
+
     // 自动更新下一页数据
     const currentDom = document.querySelector(`#page${currentId}`)
     if (currentDom && !currentDom.nextElementSibling) {
       getNextPageData(currentId)
     }
+
     // 必要时更新目录列表
     detectNeedResetMenus()
   }, [currentId])
 
   useEffect(() => {
+    !hasMore && storeViewHistory()
+  }, [hasMore])
+
+  // storages
+  const [menusTipShow, setMenusTipShow] = useState(true)
+  const [settingTipShow, setSettingTipShow] = useState(true)
+
+  const clickHideMenus = e => {
+    e.stopPropagation()
+    if (menusTipShow) {
+      setMenusTipShow(false)
+      WebStorage.set(MenusHideKey, true)
+    }
+    if (settingTipShow) {
+      setSettingTipShow(false)
+      WebStorage.set(SettingHideKey, true)
+    }
+
+    if (e.target.classList.contains('menusHidePrevent')) {
+      return false
+    }
+
+    onHideMenus()
+  }
+
+  useEffect(() => {
+    // tips 提示只出现一次
+    if (WebStorage.get(MenusHideKey)) {
+      setMenusTipShow(false)
+    }
+    if (WebStorage.get(SettingHideKey)) {
+      setSettingTipShow(false)
+    }
+
     document.body.addEventListener('click', clickHideMenus)
 
     return () => {
       document.body.removeEventListener('click', clickHideMenus)
     }
   }, [])
+
+  const getLeftSlipPos = e => {
+    const touches = e.touches
+    if (touches.length === 1) {
+      const clientX = touches[0].clientX
+      if (clientX > 20) {
+        return clientX
+      }
+    }
+    return 0
+  }
+
+  // 左滑
+  const leftSlipStartRef = useRef(0)
+  const leftSlipMovingRef = useRef(0)
+  const onTouchStart = throttle(e => {
+    const leftSlipPos = getLeftSlipPos(e)
+    if (leftSlipPos) {
+      leftSlipStartRef.current = leftSlipPos
+      sideNavRef.current && sideNavRef.current.classList.remove('navTransition')
+    }
+  }, 50)
+  // @TODO: 1、按页面宽度加宽能成功滑出菜单的距离 2、滑动时上下距离不能太大了
+  const onTouchMove = e => {
+    if (!leftSlipStartRef.current) {
+      return
+    }
+    const leftSlipPos = getLeftSlipPos(e)
+    const moveDistance = Math.min(leftSlipPos - leftSlipStartRef.current, 70)
+    leftSlipMovingRef.current = leftSlipPos
+    console.log('moving', leftSlipMovingRef.current)
+    onShowMenus(null, 70 - moveDistance)
+  }
+  const onTouchEnd = e => {
+    if (!leftSlipStartRef.current) {
+      return
+    }
+    sideNavRef.current && sideNavRef.current.classList.add('navTransition')
+    console.log('end', leftSlipMovingRef.current)
+    if (leftSlipMovingRef.current > 60) {
+      onShowMenus(null)
+    } else {
+      onHideMenus()
+    }
+    leftSlipStartRef.current = leftSlipMovingRef.current = 0
+  }
 
   return (
     <>
@@ -388,7 +486,7 @@ const Page = ({ data, id }) => {
               <span>/</span>
               <h1>{page.mname}</h1>
             </header>
-            <div className={reGetPageloading ? 'loadingOnWrapper pagesWrapper' : 'pagesWrapper'}>
+            <div className={reGetPageloading ? 'loadingOnWrapper pagesWrapper' : 'pagesWrapper'} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
               {list.map((page, index) => {
                 const prevId = getNextId(menus, page.id, true)
                 const nextId = getNextId(menus, page.id, false)
@@ -397,7 +495,7 @@ const Page = ({ data, id }) => {
                   <article key={`${page.id}`} className={`pages ${styles.page}`} id={`page${page.id}`}>
                     <div className={styles.pageSetting}>
                       <div className={styles.pageChange}>
-                        <a href={`/book/${page.novelId}`} className="menusHidePrevent" onClick={onShowMenus} title="章节列表">章节列表</a>
+                        <a href={`/book/${page.novelId}`} className={`${menusTipShow ? 'tipsBottomLeft' : ''} menusHidePrevent`} onClick={onShowMenus} title="章节列表"></a>
                         {prevId ?
                           <a href={`/page/${prevId}`} className={cx({ borderRight: true })} onClick={onPrev(page.id)}>上一章</a> :
                           <span className={cx({ borderRight: true, disabled: true })}>前面没了</span>
@@ -410,7 +508,7 @@ const Page = ({ data, id }) => {
                       <div className={styles.setting}>
                         <span onClick={onBig(page.id)} className={cx({ borderRight: true, disabled: fontSizeList.indexOf(fontSizeClass) > fontSizeList.length - 2 })}>字号加大</span>
                         <span onClick={onSmall(page.id)} className={cx({ disabled: fontSizeList.indexOf(fontSizeClass) < 1 })}>字号加小</span>
-                        <span className={styles.settingBtn} onClick={onSetting}>更多设置</span>
+                        <span className={`${settingTipShow ? 'tipsTopRright' : ''} ${styles.settingBtn}`} onClick={onSetting}></span>
                       </div>
                     </div>
                     <header className={`commonHeader ${styles.pageTitleHeader}`}>

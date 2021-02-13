@@ -60,7 +60,7 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
   const [novel, list, DescMenus, total, recommendBooks] = Array.isArray(data) && data.length >= 5 ? data : [{}, [], [], 0, []]
 
   // title
-  const title = novel && novel.title ? `《${novel.title}》_${novel.author}著_${novel.typename}${novel.isComplete ? '全本小说_' : ''}_${SiteName}` : SiteName
+  const title = novel && novel.title ? `《${novel.title}》_${novel.author}著_${novel.typename}${novel.isComplete ? '全本小说_' : ''}_${SiteName}_免费看小说` : `${SiteName}_免费看小说`
   const description = getDescription(novel)
 
   const lastMenu = DescMenus.length ? DescMenus[0] : (list.length ? list[list.length - 1] : {})
@@ -180,7 +180,7 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
       <Head>
         <title>{title}</title>
         <meta name="description" content={description}></meta>
-        <meta name="keywords" content={novel && novel.title || SiteName}></meta>
+        <meta name="keywords" content={novel && novel.title || `${SiteName},免费看小说`}></meta>
       </Head>
       <Top noH1={true} />
       <Search />
@@ -246,7 +246,7 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
                 {menusList.length ?
                   <Link as={`/page/${menusList[0].id}`} href={`/page?id=${menusList[0].id}`}>
                     开始阅读
-              </Link> :
+                  </Link> :
                   null}
                 <span className={styles.collectBook} onClick={onCollectBook}>收藏本书</span>
                 <span className={styles.goBottom} onClick={onGoBottom}>直达底部</span>

@@ -333,6 +333,10 @@ input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
   }
 }
 
+.searchHeader {
+  margin: 30px 16px 0;
+}
+
 .crumbs {
   font-size: 14px;
 
@@ -355,6 +359,13 @@ input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
     // color: #f7700f;
     // font-size: 18px;
     // padding-right: 20px;
+  }
+}
+
+.historyWrapper {
+  .crumbs {
+    margin-bottom: 8px;
+    border-bottom: none;
   }
 }
 
@@ -601,4 +612,141 @@ footer  {
 
 .oh {
   overflow: hidden;
+}
+
+.toolTips {
+  position: relative;
+
+  &:before, &:after {
+    content: '';
+    position: absolute;
+  }
+
+  &:before {
+    content: '往左滑动也可以弹出章节目录～';
+    min-width: 30px;
+    white-space: nowrap;
+    line-height: 26px;
+    padding: 6px 10px;
+    color: #fff;
+    font-size: 14px;
+    text-align: left;
+    text-decoration: none;
+    background-color: rgba(0,0,0,.75);
+    border-radius: 2px;
+    top: 100%;
+    left: -10px;
+    margin-top: 6px;
+  }
+
+  &:after {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 4px;
+    margin-top: 1px;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid rgba(0,0,0,.75);
+  }
+}
+
+.tipsBottomLeft {
+  @extend .toolTips;
+}
+
+.tipsTopRright {
+  @extend .toolTips;
+  &:before, &:after {
+    top: auto;
+    bottom: 100%;
+    margin-bottom: 6px;
+  }
+
+  &:before {
+    content: '往左滑动也可以弹出设置～';
+    left: auto;
+    right: -10px;
+  }
+
+  &:after {
+    right: 5px;
+    left: auto;
+    margin-bottom: -4px;
+    border-bottom: 5px solid transparent;
+    border-top: 5px solid rgba(0,0,0,.75);
+  }
+}
+
+.noData {
+  text-align: center;
+  padding: 24px 0 20px;
+  color: #777;
+  font-size: 16px;
+  background-color: #fff;
+  box-sizing: content-box;
+
+  &:before {
+    content: '';
+    width: 120px;
+    height: 80px;
+    display: block;
+    background: url(./images/nodata.png) no-repeat;
+    background-size: contain;
+    margin: 0 auto 15px;
+  }
+}
+
+.homeHistory {
+  .noData {
+    padding: 5px 0 0;
+    background-color: transparent;
+
+    &:before {
+      display: none;
+    }
+  }
+}
+
+.authorChunk {
+  margin-top: 8px;
+
+  .commonHeader {
+    padding: 16px 16px 0;
+    background-color: #fff;
+
+    h1 {
+      margin-bottom: 0;
+    }
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+}
+
+.authorList {
+  li {
+    padding: 0 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    line-height: 44px;
+    font-size: 14px;
+    background-color: #fff;
+    margin-bottom: 1px; /*no*/
+    position: relative;
+
+    a {
+      color: #4e6ef2;
+      font-size: 16px;
+    }
+
+    &:last-child {
+      padding-bottom: 30px;
+      border-bottom: none;
+    }
+  }
 }
