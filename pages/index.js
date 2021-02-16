@@ -31,7 +31,7 @@ const Home = ({ data }) => {
   return (
     <>
       <Head>
-        <title>{SiteName}</title>
+        <title>{`${SiteName}_免费无弹窗小书阅读_最佳阅读体验小说阅读`}</title>
         <meta name="description" content={Description}></meta>
         <meta name="keywords" content={Keywords}></meta>
       </Head>

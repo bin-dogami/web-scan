@@ -48,9 +48,8 @@ const useStateRef = (pageIndex, isDesc, pageSize, triggerHttp) => {
 
 const getDescription = (novel) => {
   if (novel && novel.title) {
-    let description = novel.title
-    description += `,${novel.title}小说阅读。`
-    description += `${novel.typename}${novel.title}由作家${novel.author}创作，${SiteName}提供${novel.title}最新章节及章节列表，${novel.title}最新更新尽在${SiteName}`
+    let description = `${novel.title}小说阅读,`
+    description += `${novel.typename}${novel.title}由作家${novel.author}创作,${SiteName}提供${novel.title}最新章节及章节列表,${SiteName}提供最佳阅读体验，章节阅读自动翻页，无需手动翻页，无弹窗阅读就上${SiteName}`
     return description
   }
 
@@ -180,8 +179,9 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
     <>
       <Head>
         <title>{title}</title>
-        <meta name="description" content={`${description},${description}最新章节`}></meta>
-        <meta name="keywords" content={novel && novel.title || `${SiteName},免费看小说`}></meta>
+        <meta name="description" content={description}></meta>
+        <meta name="keywords" content={novel && novel.title ? `${novel.title}最新章节,${novel.title}免费阅读,${novel.title}无弹窗阅读`
+          : `${SiteName},免费看小说`}></meta>
       </Head>
       <Top noH1={true} />
       <Search />
