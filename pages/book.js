@@ -61,7 +61,7 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
   const [novel, list, DescMenus, total, recommendBooks] = Array.isArray(data) && data.length >= 5 ? data : [{}, [], [], 0, []]
 
   // title
-  const title = novel && novel.title ? `《${novel.title}》_${novel.author}著_${novel.typename}${novel.isComplete ? '全本小说_' : ''}_${SiteName}_免费看小说` : `${SiteName}_免费看小说`
+  const title = novel && novel.title ? `${novel.title}_${novel.author}著_${novel.typename}${novel.isComplete ? '全本小说_' : ''}_${novel.title}无弹窗阅读_${novel.title}免费看_${SiteName}` : `${SiteName}_免费看小说_无弹窗小说`
   const description = getDescription(novel)
 
   const lastMenu = DescMenus.length ? DescMenus[0] : (list.length ? list[list.length - 1] : {})
@@ -180,7 +180,7 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
     <>
       <Head>
         <title>{title}</title>
-        <meta name="description" content={description}></meta>
+        <meta name="description" content={`${description},${description}最新章节`}></meta>
         <meta name="keywords" content={novel && novel.title || `${SiteName},免费看小说`}></meta>
       </Head>
       <Top noH1={true} />
@@ -207,9 +207,7 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
                   <header>
                     <h3>
                       作者：
-                  <a href="" title={`作者：${novel.author}`} className={styles.author}>
-                        {novel.author}
-                      </a>
+                      <Link as={`/author/${novel.authorId}`} href={`/author?id=${novel.authorId}`} title={`作者：${novel.author}`} className={styles.author}>{novel.author}</Link>
                     </h3>
                   </header>
                   <ul>
