@@ -11,7 +11,7 @@ const BookItem = ({ isHistory, data: { id, title, author, authorId, pageId, page
 
   return (
     <li className={styles.bookItemSimple}>
-      <Link as={`/book/${id}`} href={`/page?id=${id}`} title={`书名：${title}`} className={cx({ title: true, half: isHistory })}>
+      <Link as={`/book/${id}`} href={`/book?id=${id}`} title={`书名：${title}`} className={cx({ title: true, half: isHistory })}>
         <strong>{title}</strong>
       </Link>
       {

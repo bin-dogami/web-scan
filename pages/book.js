@@ -3,6 +3,7 @@ import { observer, inject } from 'mobx-react';
 import { SiteName, Description, devHost, useHttping, usePagination, usePaginationDrops, scrollIntoView } from '@/utils/index'
 import { getBookById, getMenusByBookId } from '@/utils/request'
 import * as dayjs from 'dayjs'
+import Image from 'next/image'
 
 import Head from 'next/head'
 import Top from '@@/top/index'
@@ -200,7 +201,7 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
               </header>
               <div className={styles.detail}>
                 <div className={styles.thumb}>
-                  <img src={`http://${devHost}:3011/${novel.thumb}`} alt={novel.title} title={novel.title} />
+                  <Image src={`/${novel.thumb}`} alt={novel.title} title={novel.title} layout="fill"></Image>
                 </div>
                 <div className={styles.info}>
                   <header>
@@ -233,7 +234,7 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
                       <strong>
                         最新章节：
                     {lastMenu && lastMenu.id ?
-                          <Link as={`/page/${lastMenu.id}`} href={`/page?id=${lastMenu.id}`}>
+                          <Link as={`/page/${lastMenu.id}`} href={`/page?id=${lastMenu.id}`} className={styles.lastMenu}>
                             {lastMenu.mname}
                           </Link> : ''
                         }

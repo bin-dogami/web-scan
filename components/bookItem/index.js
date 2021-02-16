@@ -3,25 +3,19 @@ import { observer, inject } from 'mobx-react';
 import styles from './Book.module.scss'
 import classnames from 'classnames/bind';
 const cx = classnames.bind(styles);
-import { devHost } from "@/utils/index";
 import Link from '@@/link/index'
+import Image from 'next/image'
 
 const BookItem = ({ store: { common }, data: { id, title, author, authorId, description, thumb } }) => {
-  // const toBookPage = e => {
-  //   e.preventDefault()
-  // }
-
-  // @TODO: 根据mobx 判断是否是主页，主页用`推荐`标签
   const isIndex = common.pageName === 'Home'
   const isOrder = ['Types', 'Hot', 'Complete'].includes(common.pageName)
 
   return (
-    <article className={cx({ bookItem: true, isRecommend: isIndex, bookItemOrder: isOrder })}>
+    <article className={`bgTheme ${cx({ bookItem: true, isRecommend: isIndex, bookItemOrder: isOrder })}`}>
       <div className={styles.thumb}>
-        <Link as={`/book/${id}`} href={`/types?id=${id}`} title={title}>
-          <img src={`http://${devHost}:3011/${thumb}`} alt={title} title={title} />
+        <Link as={`/book/${id}`} href={`/book?id=${id}`} title={title}>
+          <Image src={`/${thumb}`} alt={title} title={title} layout="fill"></Image>
         </Link>
-        {/* <img src="https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=507334429,3770328621&fm=179&app=42&f=JPEG?w=240&h=320&s=4D47CD0854A12DA5E11845D3010050B2"></img> */}
       </div>
       <div className={styles.info}>
         <header className={styles.infoTop}>
@@ -33,7 +27,7 @@ const BookItem = ({ store: { common }, data: { id, title, author, authorId, desc
           <Link as={`/author/${authorId}`} href={`/author?id=${authorId}`} title={`作者：${author}`} className={styles.author}>{author}</Link>
         </header>
         <p className={styles.description}>
-          <Link as={`/book/${id}`} href={`/types?id=${id}`}>
+          <Link as={`/book/${id}`} href={`/book?id=${id}`}>
             简介：{description.trim()}
           </Link>
         </p>
@@ -42,5 +36,4 @@ const BookItem = ({ store: { common }, data: { id, title, author, authorId, desc
   )
 }
 
-// export default observer(BookItem)
 export default inject('store')(observer(BookItem))

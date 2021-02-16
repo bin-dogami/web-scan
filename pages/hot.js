@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { observer, inject } from 'mobx-react';
-import { useLoading, useScrollThrottle } from '@/utils/index'
+import { useLoading, useScrollThrottle, SiteName } from '@/utils/index'
 import { getBooksByHot } from '@/utils/request'
 
 import Head from 'next/head'
@@ -63,7 +63,9 @@ const Hot = ({ data, skip }) => {
   return (
     <>
       <Head>
-        <title>热门推荐小说</title>
+        <title>{`热门推荐小说_热门推荐小说排行榜_${SiteName}`}</title>
+        <meta name="description" content={`最新热门网络小说排行榜是用户推举的小说排行榜,包含各类小说排行榜及热门小说推荐,小说排行榜上都是受用户欢迎的小说作品,精彩尽在${SiteName}。`}></meta>
+        <meta name="keywords" content={`小说排行榜,热门小说排行榜,小说排行榜完结版,完结小说排行榜,完本小说排行榜,最新小说排行榜,网络小说排行榜`}></meta>
       </Head>
       <Top noH1={true} />
       <Search />

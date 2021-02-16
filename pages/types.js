@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { observer, inject } from 'mobx-react';
-import { useLoading, useScrollThrottle } from '@/utils/index'
+import { useLoading, useScrollThrottle, SiteName } from '@/utils/index'
 // 其实一个接口就行了，懒得改了
 import { getTypesData, getBooksByType } from '@/utils/request'
 
@@ -109,7 +109,9 @@ const Types = ({ data, id, page }) => {
   return (
     <>
       <Head>
-        <title>分类</title>
+        <title>{`分类小说推荐_中文小说排行榜_${SiteName}`}</title>
+        <meta name="description" content={`${SiteName}提供玄幻、武侠、原创、网游、都市、言情、历史、军事、科幻、恐怖、官场、穿越、重生等小说,最新全本免费手机小说阅读推荐,精彩尽在${SiteName}。`}></meta>
+        <meta name="keywords" content={`玄幻小说,武侠小说,原创小说,网游小说、都市小说,言情小说,历史小说,军小说事,科幻小说,恐怖小说,官场小说,穿越小说,全本小说,免费小说下载,小说在线阅读,无弹窗小说网`}></meta>
       </Head>
       <Top noH1={true} />
       <Search />

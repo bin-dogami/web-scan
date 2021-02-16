@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { observer, inject } from 'mobx-react';
 import { getIndexData } from '@/utils/request'
+import { SiteName, Description, Keywords } from '@/utils/index'
 
 import Head from 'next/head'
 import Top from '@@/top/index'
@@ -30,7 +31,9 @@ const Home = ({ data }) => {
   return (
     <>
       <Head>
-        <title>老王爱看书网</title>
+        <title>{SiteName}</title>
+        <meta name="description" content={Description}></meta>
+        <meta name="keywords" content={Keywords}></meta>
       </Head>
       <Top isIndex={true} />
       <Search />

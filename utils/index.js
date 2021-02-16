@@ -3,6 +3,8 @@ import { getBooksLastPageByIds } from './request'
 
 export const SiteName = '老王爱看书网'
 export const Description = `${SiteName}，无弹窗小说网，体验超棒小说网，滚动加载小说网，全书小说，玄幻小说，都市小说，科幻小说，热门小说，仙侠小说，历史小说，最新小说`
+export const Keywords = `${SiteName},小说网,手机小说,最新小说推荐,小说阅读网,无弹窗小说网,免费小说下载网,小说阅读器全本免费小说,${SiteName},小说网站排名,小说在线阅读,免费小说阅读`
+
 export const devHost = 1 ? '192.168.199.226' : '192.168.31.231'
 const productionHost = 'http://localhost:3000/';
 export const IS_DEV = process.env.NODE_ENV === 'development';

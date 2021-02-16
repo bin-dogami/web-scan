@@ -19,7 +19,9 @@ function MyApp ({ Component, pageProps }) {
   }, [])
 
   useEffect(() => {
-    rootStore.common.setPageName(Component.wrappedComponent.type.displayName)
+    const pageName = Component.wrappedComponent.type.displayName
+    rootStore.common.setPageName(pageName)
+    document.body.setAttribute('class', pageName)
   })
 
   return (

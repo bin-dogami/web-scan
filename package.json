@@ -5,7 +5,7 @@
   "scripts": {
     "bdev": "next dev -p 3010",
     "dev_": "node ./dev-images.js | npm run bdev",
-    "dev": "node ./dev-images.js | node server.js",
+    "dev": "node server.js",
     "build": "next build",
     "start": "next start -p 3010"
   },

@@ -134,7 +134,7 @@
   }
 
   .disabled {
-    color: #bbb;
+    filter: grayscale(1);
   }
 }
 
@@ -163,6 +163,6 @@
   }
 
   .disabled {
-    color: #bbb;
+    filter: grayscale(1);
   }
 }

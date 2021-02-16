@@ -1,9 +1,14 @@
 
+export const DefaultTheme = 1
+export const DefaultFontSize = ""
+
 export const MenusHideKey = 'menus-hide-key'
 export const SettingHideKey = 'setting-hide-key'
 export const HistoryBooksKey = 'history-books-Key'
+export const ThemeKey = 'theme-Key'
+export const FontSizeKey = 'font-size-Key'
 
-const maxStoredHistoryLen = 20
+const maxStoredHistoryLen = 50
 export const WebStorage = {
   getAll () {
     const storages = {}

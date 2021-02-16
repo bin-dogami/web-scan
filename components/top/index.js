@@ -8,7 +8,7 @@ const Top = ({ store: { common }, isIndex, noH1, noSearchBtn }) => {
     <header className={isIndex ? 'indexTop top' : 'top'}>
       {noSearchBtn ? <span /> : <div className="searchBtn" onClick={toSearch}>搜索</div>}
       {noH1 ? <strong>老王爱看书网</strong> : <h1>老王爱看书网</h1>}
-      <div className="setting">设置</div>
+      {/* <div className="setting">设置</div> */}
     </header>
   )
 }

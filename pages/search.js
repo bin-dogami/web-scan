@@ -1,6 +1,7 @@
 import React from 'react'
 import { observer, inject } from 'mobx-react';
 import { getBookBySearch } from '@/utils/request'
+import { SiteName, Description, Keywords } from '@/utils/index'
 
 import Head from 'next/head'
 import Top from '@@/top/index'
@@ -14,7 +15,9 @@ const Query = ({ data, name }) => {
   return (
     <>
       <Head>
-        <title>查询“{name}”</title>
+        <title>{`${name ? name + '查询_' : ''}${SiteName}`}</title>
+        <meta name="description" content={Description}></meta>
+        <meta name="keywords" content={Keywords}></meta>
       </Head>
       <Top noH1={true} noSearchBtn={true} />
       <Nav />

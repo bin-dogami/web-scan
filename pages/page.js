@@ -1,8 +1,9 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { observer, inject } from 'mobx-react';
 import { SiteName, Description, scrollIntoViewIfNeeded, scrollIntoView, LoadingText, NoMoreText, useLoading, useScrollThrottle, throttle, getElementToPageTop } from '@/utils/index'
-import { WebStorage, MenusHideKey, SettingHideKey } from '@/utils/webStorage'
+import { WebStorage, MenusHideKey, SettingHideKey, ThemeKey, FontSizeKey, DefaultTheme, DefaultFontSize } from '@/utils/webStorage'
 import { getPageById, getPrevNextMenus } from '@/utils/request'
+import Image from 'next/image'
 
 import Head from 'next/head'
 import Top from '@@/top/index'
@@ -17,6 +18,28 @@ import styles from '@/styles/Page.module.scss'
 import classnames from 'classnames/bind'
 const cx = classnames.bind(styles)
 
+const bgColorList = [
+  {
+    name: '白色皮肤',
+    color: '#fff'
+  },
+  {
+    name: '灰色皮肤',
+    color: '#f3f3f3'
+  },
+  {
+    name: '黄色皮肤',
+    color: '#fbf6ec'
+  },
+  {
+    name: '黑色皮肤',
+    color: '#1b1b1b'
+  },
+  {
+    name: '蓝色皮肤',
+    color: '#c3d4e7'
+  }
+]
 const getNextId = (list, id, isPrev = false, returnIndex) => {
   if (!id || !list.length) {
     return null
@@ -40,6 +63,20 @@ const getNextId = (list, id, isPrev = false, returnIndex) => {
     return next ? next.index : null
   }
   return next ? next.id : 0
+}
+
+const getLeftSlipPos = e => {
+  const touches = e.touches
+  if (touches.length === 1) {
+    const clientX = touches[0].clientX
+    if (clientX > 10) {
+      return {
+        x: clientX,
+        y: touches[0].clientY
+      }
+    }
+  }
+  return null
 }
 
 const useStateRef = (menus, currentId, hasMore) => {
@@ -80,6 +117,7 @@ const Page = ({ data, id }) => {
   const LoadingChunk = useLoading(loading, hasMore)
   const loadingRef = useRef(loading)
   const sideNavRef = useRef(null)
+  const settingRef = useRef(null)
   const bottomHeightRef = useRef(0)
   // 这个 loading 给上一页或点击目录里链接时用的
   const [reGetPageloading, setReGetPageloading] = useState(false)
@@ -275,41 +313,72 @@ const Page = ({ data, id }) => {
 
   // 字体大小
   const fontSizeList = ['small14', 'small16', '', 'big20', 'big22', 'big24', 'big28']
-  const [fontSizeClass, setFontSizeClass] = useState('')
+  const [fontSizeClass, setFontSizeClass] = useState(DefaultFontSize)
+  const setFontSize = (fs) => {
+    setFontSizeClass(fs)
+    WebStorage.set(FontSizeKey, fs)
+  }
   const onBig = id => () => {
     const index = fontSizeList.indexOf(fontSizeClass)
-    index < fontSizeList.length - 1 && setFontSizeClass(fontSizeList[index + 1])
-    setCurrentId(id)
-    // 高度变化后修复滚动位置
-    setTimeout(() => {
-      scrollIntoView(document.querySelector(`#page${id}`))
-    }, 100);
+    index < fontSizeList.length - 1 && setFontSize(fontSizeList[index + 1])
+    if (id) {
+      setCurrentId(id)
+      // 高度变化后修复滚动位置
+      setTimeout(() => {
+        scrollIntoView(document.querySelector(`#page${id}`))
+      }, 100);
+    }
   }
   const onSmall = id => () => {
     const index = fontSizeList.indexOf(fontSizeClass)
-    index > 0 && setFontSizeClass(fontSizeList[index - 1])
-    setCurrentId(id)
-    setTimeout(() => {
-      scrollIntoView(document.querySelector(`#page${id}`))
-    }, 100);
+    index > 0 && setFontSize(fontSizeList[index - 1])
+    if (id) {
+      setCurrentId(id)
+      setTimeout(() => {
+        scrollIntoView(document.querySelector(`#page${id}`))
+      }, 100);
+    }
   }
 
-  const onSetting = () => {
+  /*   const [openTagChange, setOpenTagChange] = useState(false)
+    const openTagChangeRef = useRef(openTagChange)
+    const onTapChangePage = () => {
+      setOpenTagChange(!openTagChange)
+    }
 
+    useEffect(() => {
+      openTagChangeRef.current = openTagChange
+    }, [openTagChange]) */
+
+  const onShowSetting = (e, right) => {
+    e && e.preventDefault()
+    if (!settingRef.current) {
+      return
+    }
+    sideNavRef.current && (sideNavRef.current.style = '')
+
+    settingRef.current.style = right ? `right: -${right}px` : 'right: 0'
+    document.body.classList.add('oh')
+    if (!right) {
+      scrollIntoViewIfNeeded(settingRef.current.querySelector('.on'))
+    }
   }
-
   const onShowMenus = (e, left) => {
     e && e.preventDefault()
     if (!sideNavRef.current) {
       return
     }
+    settingRef.current && (settingRef.current.style = '')
 
-    sideNavRef.current.style = left ? `left: -${left}%` : 'left: 0'
+    sideNavRef.current.style = left ? `left: -${left}px` : 'left: 0'
     document.body.classList.add('oh')
-    scrollIntoViewIfNeeded(sideNavRef.current.querySelector('.on'))
+    if (!left) {
+      scrollIntoViewIfNeeded(sideNavRef.current.querySelector('.on'))
+    }
   }
-  const onHideMenus = () => {
+  const onHidePops = () => {
     sideNavRef.current && (sideNavRef.current.style = '')
+    settingRef.current && (settingRef.current.style = '')
     document.body.classList.remove('oh')
   }
 
@@ -385,7 +454,31 @@ const Page = ({ data, id }) => {
   const [menusTipShow, setMenusTipShow] = useState(true)
   const [settingTipShow, setSettingTipShow] = useState(true)
 
+  // 这个功能之后弄
+  // const isMovingRef = useRef(false)
+  // const scrollToPage = (clientHeight, toPrev) => {
+
+  // }
+  // const onChangePage = e => {
+  //   console.log(e)
+  //   if (!openTagChangeRef.current) {
+  //     return
+  //   }
+  //   setTimeout(() => {
+  //     if (isMovingRef.current) {
+  //       return
+  //     }
+
+  //     const clientHeight = document.documentElement.clientHeight
+  //     if (e.clientX > clientHeight * 2 / 3) {
+  //       scrollToPage(clientHeight)
+  //     } else if (e.clientX < clientHeight * 1 / 3) {
+  //       scrollToPage(clientHeight, true)
+  //     }
+  //   }, 300);
+  // }
   const clickHideMenus = e => {
+    // onChangePage(e)
     e.stopPropagation()
     if (menusTipShow) {
       setMenusTipShow(false)
@@ -400,8 +493,91 @@ const Page = ({ data, id }) => {
       return false
     }
 
-    onHideMenus()
+    onHidePops()
   }
+
+  // 左/右滑
+  const leftSlipStartRef = useRef(null)
+  const leftSlipMovingRef = useRef(null)
+  const isMovingUpDownRef = useRef(1)
+  // 是左滑还是右滑
+  const isLeftStartRef = useRef(0)
+  const onTouchStart = e => {
+    const leftSlipPos = getLeftSlipPos(e)
+    if (!leftSlipPos) {
+      return
+    }
+
+    leftSlipStartRef.current = leftSlipPos
+    sideNavRef.current && sideNavRef.current.classList.remove('navTransition')
+    settingRef.current && settingRef.current.classList.remove('settingTransition')
+  }
+  const onTouchMove = e => {
+    if (!leftSlipStartRef.current) {
+      return
+    }
+    // 防止误触出菜单
+    const leftSlipPos = getLeftSlipPos(e)
+    if (!leftSlipPos) {
+      return
+    }
+    if (Math.abs(leftSlipPos.x - leftSlipStartRef.current.x) < 30) {
+      isMovingUpDownRef.current += Math.abs(leftSlipPos.y - leftSlipStartRef.current.y) > Math.abs(leftSlipPos.x - leftSlipStartRef.current.x) ? 1 : -1
+      isLeftStartRef.current += leftSlipPos.x > leftSlipStartRef.current.x ? 1 : -1
+      return
+    }
+    // 上下滑动距离比左右大就让它上下滑动
+    if (isMovingUpDownRef.current > 0) {
+      isMovingUpDownRef.current = 1
+      return
+    }
+    // 不在左滑和右滑条件里
+    if (!isLeftStartRef.current) {
+      return
+    }
+    const maxMenusLeft = document.documentElement.clientWidth * 0.7
+    const isLeftStart = isLeftStartRef.current > 0
+    const moveDistance = Math.min(Math.abs(leftSlipPos.x - leftSlipStartRef.current.x), maxMenusLeft)
+    leftSlipMovingRef.current = leftSlipPos
+    isLeftStart ? onShowMenus(null, maxMenusLeft - moveDistance) : onShowSetting(null, maxMenusLeft - moveDistance)
+  }
+  const onTouchEnd = e => {
+    sideNavRef.current && sideNavRef.current.classList.add('navTransition')
+    settingRef.current && settingRef.current.classList.add('settingTransition')
+    if (!leftSlipStartRef.current || !leftSlipMovingRef.current) {
+      return
+    }
+    // 不在左滑和右滑条件里
+    if (!isLeftStartRef.current) {
+      return
+    }
+    const minAutoMoveOutDistance = document.documentElement.clientWidth * 0.7 * (1 / 3)
+    const isLeftStart = isLeftStartRef.current > 0
+    // 左滑达到 1/3 的距离放手后就可以出菜单了
+    if (Math.abs(leftSlipMovingRef.current.x - leftSlipStartRef.current.x) > minAutoMoveOutDistance) {
+      isLeftStart ? onShowMenus(null) : onShowSetting(null)
+    } else {
+      onHidePops()
+    }
+    leftSlipStartRef.current = leftSlipMovingRef.current = null
+    isLeftStartRef.current = 0
+  }
+
+  // 皮肤设置
+  const [selectTheme, setSelectTheme] = useState(DefaultTheme)
+  const onChangeTheme = (index) => () => {
+    setSelectTheme(index)
+    WebStorage.set(ThemeKey, index)
+  }
+
+  useEffect(() => {
+    const classList = document.body.classList
+    let index = bgColorList.length
+    while (--index >= 0) {
+      classList.contains(`pageTheme${index}`) && classList.remove(`pageTheme${index}`)
+    }
+    classList.add(`pageTheme${selectTheme}`)
+  }, [selectTheme])
 
   useEffect(() => {
     // tips 提示只出现一次
@@ -411,6 +587,10 @@ const Page = ({ data, id }) => {
     if (WebStorage.get(SettingHideKey)) {
       setSettingTipShow(false)
     }
+    const theme = WebStorage.get(ThemeKey)
+    theme && setSelectTheme(theme)
+    const fontSize = WebStorage.get(FontSizeKey,)
+    fontSize && setFontSizeClass(fontSize)
 
     document.body.addEventListener('click', clickHideMenus)
 
@@ -418,52 +598,6 @@ const Page = ({ data, id }) => {
       document.body.removeEventListener('click', clickHideMenus)
     }
   }, [])
-
-  const getLeftSlipPos = e => {
-    const touches = e.touches
-    if (touches.length === 1) {
-      const clientX = touches[0].clientX
-      if (clientX > 20) {
-        return clientX
-      }
-    }
-    return 0
-  }
-
-  // 左滑
-  const leftSlipStartRef = useRef(0)
-  const leftSlipMovingRef = useRef(0)
-  const onTouchStart = throttle(e => {
-    const leftSlipPos = getLeftSlipPos(e)
-    if (leftSlipPos) {
-      leftSlipStartRef.current = leftSlipPos
-      sideNavRef.current && sideNavRef.current.classList.remove('navTransition')
-    }
-  }, 50)
-  // @TODO: 1、按页面宽度加宽能成功滑出菜单的距离 2、滑动时上下距离不能太大了
-  const onTouchMove = e => {
-    if (!leftSlipStartRef.current) {
-      return
-    }
-    const leftSlipPos = getLeftSlipPos(e)
-    const moveDistance = Math.min(leftSlipPos - leftSlipStartRef.current, 70)
-    leftSlipMovingRef.current = leftSlipPos
-    console.log('moving', leftSlipMovingRef.current)
-    onShowMenus(null, 70 - moveDistance)
-  }
-  const onTouchEnd = e => {
-    if (!leftSlipStartRef.current) {
-      return
-    }
-    sideNavRef.current && sideNavRef.current.classList.add('navTransition')
-    console.log('end', leftSlipMovingRef.current)
-    if (leftSlipMovingRef.current > 60) {
-      onShowMenus(null)
-    } else {
-      onHideMenus()
-    }
-    leftSlipStartRef.current = leftSlipMovingRef.current = 0
-  }
 
   return (
     <>
@@ -493,9 +627,9 @@ const Page = ({ data, id }) => {
 
                 return (
                   <article key={`${page.id}`} className={`pages ${styles.page}`} id={`page${page.id}`}>
-                    <div className={styles.pageSetting}>
+                    <div className={`pageSetting ${styles.pageSetting}`}>
                       <div className={styles.pageChange}>
-                        <a href={`/book/${page.novelId}`} className={`${menusTipShow ? 'tipsBottomLeft' : ''} menusHidePrevent`} onClick={onShowMenus} title="章节列表"></a>
+                        <a href={`/book/${page.novelId}`} className={`${menusTipShow ? 'tipsBottomLeft' : ''} menusHidePrevent menusBtn`} onClick={onShowMenus} title="章节列表"></a>
                         {prevId ?
                           <a href={`/page/${prevId}`} className={cx({ borderRight: true })} onClick={onPrev(page.id)}>上一章</a> :
                           <span className={cx({ borderRight: true, disabled: true })}>前面没了</span>
@@ -507,8 +641,8 @@ const Page = ({ data, id }) => {
                       </div>
                       <div className={styles.setting}>
                         <span onClick={onBig(page.id)} className={cx({ borderRight: true, disabled: fontSizeList.indexOf(fontSizeClass) > fontSizeList.length - 2 })}>字号加大</span>
-                        <span onClick={onSmall(page.id)} className={cx({ disabled: fontSizeList.indexOf(fontSizeClass) < 1 })}>字号加小</span>
-                        <span className={`${settingTipShow ? 'tipsTopRright' : ''} ${styles.settingBtn}`} onClick={onSetting}></span>
+                        <span onClick={onSmall(page.id)} className={cx({ disabled: fontSizeList.indexOf(fontSizeClass) < 1 })}>字号减小</span>
+                        <span className={`${settingTipShow ? 'tipsTopRright' : ''} ${styles.settingBtn} menusHidePrevent settingBtn`} onClick={onShowSetting}></span>
                       </div>
                     </div>
                     <header className={`commonHeader ${styles.pageTitleHeader}`}>
@@ -541,6 +675,41 @@ const Page = ({ data, id }) => {
             {nextNoMore ? <NoMoreText /> : null}
             {menusHttpLoading === 1 ? <LoadingText /> : null}
           </article>
+          <section className="chunkShadow sideSetting menusHidePrevent settingTransition" ref={settingRef}>
+            <header>
+              <h2>浏览习惯设置</h2>
+            </header>
+            <article className="goBackHome">
+              <h3><Link href="/" title="回到首页">回到首页</Link></h3>
+            </article>
+            <article>
+              <h3>皮肤设置</h3>
+              <ul className="setTheme">
+                {bgColorList.map(({ name, color }, index) => (
+                  <li key={index} className={`theme${index} menusHidePrevent ` + `${index === selectTheme ? 'on' : ''}`} title={name} style={{ backgroundColor: color }} onClick={onChangeTheme(index)}>{name}</li>
+                ))}
+              </ul>
+            </article>
+            <article style={{ marginTop: '-10px' }}>
+              <h3>字号设置</h3>
+              <ul className="setFontSize">
+                <li onClick={onBig(null)} className={`menusHidePrevent ${fontSizeList.indexOf(fontSizeClass) > fontSizeList.length - 2 ? 'disabled' : true} ${cx({ borderRight: true })}`}>+ 加大</li>
+                <li onClick={onSmall(null)} className={`menusHidePrevent ${fontSizeList.indexOf(fontSizeClass) < 1 ? 'disabled' : ''}`}>- 减小</li>
+              </ul>
+            </article>
+            {/* <article>
+              <h3>阅读设置（如下图所示）</h3>
+              <div className="setReadBehavior">
+                <span className={`menusHidePrevent ${openTagChange ? 'disabled' : ''}`} onClick={onTapChangePage}>{openTagChange ? '已开启' : '开启'}</span>
+                <div className="imageWrapper">
+                  <Image src="/demo.gif" layout="fill" />
+                </div>
+              </div>
+            </article> */}
+            <article>
+              <h3>更多功能开发中...</h3>
+            </article>
+          </section>
           <Recommends data={recommendBooks} />
           <Footer />
         </>
