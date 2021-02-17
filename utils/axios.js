@@ -70,7 +70,7 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-export default function (config) {
+export default function Axios(config) {
   if (config.errorTitle) {
     if (!config.transformResponse) {
       config.transformResponse = [];

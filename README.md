@@ -27,3 +27,5 @@ yarn start
 // 见 https://juejin.cn/post/6850418113062649869#heading-16，为了避免冲突，脚本检测到 @zeit/next-sass 配置后会自动禁用内置的模块化功能
 Warning: Built-in CSS support is being disabled due to custom CSS configuration being detected.
 ```
+###
+对于 display: none 的内容，搜索引擎不会抓取

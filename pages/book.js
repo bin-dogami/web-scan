@@ -255,10 +255,11 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
               </div>
             </article>
             <section>
-              <header className="hide">
+              <header className="notShow">
                 <h2>
-                  {novel.title}章节列表
-            </h2>
+                  {novel.title}
+                  章节列表
+                </h2>
               </header>
               {DescMenus.length && !isDesc ?
                 <article className={styles.menusWrapper}>
