@@ -6,7 +6,7 @@
     "bdev": "next dev -p 3010",
     "dev_": "node ./dev-images.js | npm run bdev",
     "dev": "node server.js",
-    "build": "next build",
+    "build": "next build && npm run start",
     "start": "next start -p 3010"
   },
   "dependencies": {
