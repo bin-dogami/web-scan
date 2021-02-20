@@ -106,10 +106,8 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
     }
     httpStartRef.current = Math.floor(next / (realRequestNum / pageSizeRef.current))
     const cachedMenusList = cachedMenusObj.current[httpStartRef.current]
-    console.log(next, httpStartRef.current, cachedMenusList, cachedMenusObj)
     if (cachedMenusList) {
       const start = next % (realRequestNum / pageSizeRef.current) * pageSizeRef.current
-      console.log(start, pageSizeRef.current)
       cachedMenusList && setMenusList(cachedMenusList.slice(start, start + pageSizeRef.current))
     } else {
       // 请求数据
@@ -269,11 +267,12 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
                     </h3>
                     <span onClick={onDesc}>更多 (倒序)</span>
                   </header>
+                  {/* @TODO: 如果是全本且最后一章加上 完 */}
                   <ul className={cx({ menuList: true, descList: true })}>
                     {DescMenus.map(({ id, mname, index }) => (
                       <li key={id}>
                         <Link as={`/page/${id}`} href={`/page?id=${id}`} title={index > 0 ? `第${index}章 ${mname}` : mname}>
-                          <span>{index > 0 ? `第${index}章` : ''}</span><strong>{mname}</strong>
+                          <span className={cx({ mr10: index > 0 })}>{index > 0 ? `第${index}章` : ''}</span><strong>{mname}</strong>
                         </Link>
                       </li>
                     ))}
@@ -301,6 +300,7 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
                 </div>
               </article>
               <div className={styles.pageChange}>
+                {/* @TODO: 倒序的时候上一页和下一页应该反过来 */}
                 {
                   pageIndex === 0 ?
                     <span className={styles.disabled}>前面没了</span> :
