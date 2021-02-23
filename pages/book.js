@@ -218,12 +218,7 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
                       </strong>
                     </li>
                     <li>
-                      <strong>状态：
-                    {novel.isComplete ?
-                          <Link href='/complete'>
-                            全本
-                      </Link> : '连载'}
-                      </strong>
+                      <strong>状态：{novel.isComplete ? <Link href='/complete' title="完本">完本</Link> : '连载'}</strong>
                     </li>
                     <li><strong>更新时间：{dayjs(novel.updatetime).format('YYYY-MM-DD HH:mm')}</strong></li>
                     <li>

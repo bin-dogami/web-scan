@@ -261,6 +261,7 @@ const Page = ({ data, id }) => {
       return
     }
     if (scrollTop < 50) {
+      // @TODO: 加载完了应该跳到请求前的那个位置，不然如果前面还有很多章节，那会一直触发请求，跳到本次请求数量-2位置就行
       getMenusData(menusRef.current[0].id, page.novelId, 1)
     } else if (scrollTop + clientHeight >= scrollHeight - 150) {
       getMenusData(menusRef.current[menusRef.current.length - 1].id, page.novelId, 0)
@@ -665,6 +666,7 @@ const Page = ({ data, id }) => {
           <article className="chunkShadow sideNav menusHidePrevent navTransition" ref={sideNavRef}>
             <header>
               <h2>章节列表</h2>
+              <p>（向右滑动出章节列表弹窗）</p>
             </header>
             {menusHttpLoading === -1 ? <LoadingText /> : null}
             <ul>
@@ -680,6 +682,7 @@ const Page = ({ data, id }) => {
           <section className="chunkShadow sideSetting menusHidePrevent settingTransition" ref={settingRef}>
             <header>
               <h2>浏览习惯设置</h2>
+              <p>（向左滑动出浏览习惯设置弹窗）</p>
             </header>
             <article className="goBackHome">
               <h3><Link href="/" title="回到首页">回到首页</Link></h3>

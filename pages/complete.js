@@ -73,7 +73,7 @@ const Complete = ({ data, skip }) => {
       <header className="header crumbs">
         <strong><Link href="/" title="首页">首页</Link></strong>
         <span>/</span>
-        <h1>全本小说</h1>
+        <h1>完本小说</h1>
       </header>
       <BookList books={novels} />
       <div className="notShow">
