@@ -621,7 +621,7 @@ const Page = ({ data, id }) => {
               <span>/</span>
               <strong><Link as={`/book/${page.novelId}`} href={`/book?id=${page.novelId}`} title={page.title}>{page.title}</Link></strong>
               <span>/</span>
-              <h1>{page.mname}</h1>
+              <h1>{page.mname || (page.index > 0 ? `第${page.index}章 ` : page.title)}</h1>
             </header>
             <div className={reGetPageloading ? 'loadingOnWrapper pagesWrapper' : 'pagesWrapper'} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
               {list.map((page, index) => {
@@ -654,7 +654,7 @@ const Page = ({ data, id }) => {
                     <div className={styles[fontSizeClass]}>
                       {page.noPage ?
                         // @TODO: 反馈功能
-                        <Page404 key={`${index}`}> 此章节缺失，我们会尽快处理。<br />还有问题请<a href="">反馈</a></Page404> :
+                        <Page404 key={`${index}`}> 此章节缺失，我们会尽快处理。<br /></Page404> :
                         <div className={styles.content} dangerouslySetInnerHTML={{ __html: page.content }}></div>}
                     </div>
                   </article>

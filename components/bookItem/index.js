@@ -6,6 +6,7 @@ const cx = classnames.bind(styles);
 import Link from '@@/link/index'
 import Image from 'next/image'
 
+// @TODO: 每本书也加上最新更新时间，或者以最新更新时间排序，像 http://www.loubiqu.com/paihangbang_allvisit/1.html 这里这样有个时间列表可看
 const BookItem = ({ store: { common }, data: { id, title, author, authorId, description, thumb } }) => {
   const isIndex = common.pageName === 'Home'
   const isOrder = ['Types', 'Hot', 'Complete'].includes(common.pageName)
