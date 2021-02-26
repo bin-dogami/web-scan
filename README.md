@@ -1,6 +1,7 @@
 ## Getting Started
 
 ```bash
+> 不琯是开发环境还是生产环境启动都不用 next 命令，而用 server.js 脚本去启动，因为要用 history 模式: `https://www.nextjs.cn/docs/advanced-features/custom-server`
 // 开发环境
 yarn dev
 // 生产环境，得先 build 编译了文件再 start

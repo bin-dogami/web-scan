@@ -753,6 +753,16 @@ footer  {
   font-size: 16px;
   line-height: 30px;
 
+  &:before {
+    content: '';
+    width: 146px;
+    height: 128px;
+    margin: 80px auto 20px;
+    background: url(./images/404.png) no-repeat;
+    background-size: 100%;
+    display: block;
+  }
+
   a {
     color: #f7700f;
   }
@@ -779,7 +789,7 @@ footer  {
   }
 
   &:before {
-    content: '往左滑动也可以弹出章节目录～';
+    content: '往右滑动也可以弹出章节目录～';
     min-width: 30px;
     white-space: nowrap;
     line-height: 26px;
