@@ -19,10 +19,11 @@ function MyApp ({ Component, pageProps }) {
   }, [])
 
   useEffect(() => {
-    console.log(Component.wrappedComponent)
-    // const pageName = Component.wrappedComponent.type.displayName
-    // rootStore.common.setPageName(pageName)
-    // document.body.setAttribute('class', pageName)
+    if (Component.wrappedComponent) {
+      const pageName = Component.wrappedComponent.type.displayName
+      rootStore.common.setPageName(pageName)
+      document.body.setAttribute('class', pageName)
+    }
   })
 
   return (
