@@ -240,6 +240,8 @@ const Page = ({ data, id }) => {
           nextNoMoreRef.current = true
           setNextNoMore(true)
         }
+      } else if (data.length >= 50) {
+        sideNavRef.current && scrollIntoViewIfNeeded(sideNavRef.current.querySelector(`li[data-id="${id}"]`))
       }
     }
 
@@ -249,6 +251,9 @@ const Page = ({ data, id }) => {
 
   // currentId 变化时探查是否要重新请求目录列表，当前目录到最前/后一个目录时，再请求就没法根据目录列表获取上/下一个目录ID了
   const detectNeedResetMenus = () => {
+    if (!page) {
+      return
+    }
     const index = getCurrentIndex()
     if (index === -1 || (index < 10 && !prevNoMoreRef.current) || (index > menusRef.current.length - 10 && !nextNoMoreRef.current)) {
       getMenusData(currentIdRef.current, page.novelId, 0, true)
