@@ -19,6 +19,7 @@ function MyApp ({ Component, pageProps }) {
   }, [])
 
   useEffect(() => {
+    // @TODO: 这块貌似有问题，本地没问题，线上当前菜单不高亮了
     if (Component.wrappedComponent) {
       const pageName = Component.wrappedComponent.type.displayName
       rootStore.common.setPageName(pageName)
