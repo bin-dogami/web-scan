@@ -48,6 +48,10 @@ fieldset, legend, button, input, textarea{
   padding: 0;
 }
 
+div, p {
+  word-wrap:break-word;
+}
+
 fieldset {
   border: none;
 }
