@@ -626,7 +626,7 @@ const Page = ({ data, id }) => {
               <span>/</span>
               <strong><Link as={`/book/${page.novelId}`} href={`/book?id=${page.novelId}`} title={page.title}>{page.title}</Link></strong>
               <span>/</span>
-              <h1>{page.mname || (page.index > 0 ? `第${page.index}章 ` : page.title)}</h1>
+              <h1>{page.mname || page.realName || page.title}</h1>
             </header>
             <div className={reGetPageloading ? 'loadingOnWrapper pagesWrapper' : 'pagesWrapper'} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
               {list.map((page, index) => {
@@ -654,7 +654,7 @@ const Page = ({ data, id }) => {
                       </div>
                     </div>
                     <header className={`commonHeader ${styles.pageTitleHeader}`}>
-                      <h2>{page.index > 0 ? `第${page.index}章 ` : ''}{page.mname}</h2>
+                      <h2>{page.index > 0 ? `第${page.index}章 ${page.mname}` : page.moriginalname}</h2>
                     </header>
                     <div className={styles[fontSizeClass]}>
                       {page.noPage ?
