@@ -284,7 +284,7 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
                 </header>
                 <div className={loading ? 'loadingOnWrapper' : ''}>
                   <ul className={cx({ menuList: true, fixBlank: menusList.length % 2 !== 0 })}>
-                    {menusList.map(({ id, mname, index }) => (
+                    {menusList.map(({ id, mname, moriginalname, index }) => (
                       <li key={id}>
                         <Link as={`/page/${id}`} href={`/page?id=${id}`} title={index > 0 ? `第${index}章 ${mname}` : moriginalname}>
                           <span className={cx({ mr10: index > 0 })}>{index > 0 ? `第${index}章` : ''}</span><strong>{index > 0 ? mname : moriginalname}</strong>

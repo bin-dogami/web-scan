@@ -654,7 +654,7 @@ const Page = ({ data, id }) => {
                       </div>
                     </div>
                     <header className={`commonHeader ${styles.pageTitleHeader}`}>
-                      <h2>{page.index > 0 ? `第${page.index}章 ${page.mname}` : page.moriginalname}</h2>
+                      <h2>{page.index > 0 ? `第${page.index}章 ${page.mname}` : page.realName}</h2>
                     </header>
                     <div className={styles[fontSizeClass]}>
                       {page.noPage ?
@@ -675,9 +675,9 @@ const Page = ({ data, id }) => {
             </header>
             {menusHttpLoading === -1 ? <LoadingText /> : null}
             <ul>
-              {menus.map(({ id, mname, index }) => (
+              {menus.map(({ id, mname, moriginalname, index }) => (
                 <li key={`${id}`} className={currentId === id ? 'on' : ''} data-id={id}>
-                  <a href={`/page/${id}`} title={mname} onClick={onMenusItemClick(id)}>{index > 0 ? `第${index}章` : ''} {mname}</a>
+                  <a href={`/page/${id}`} title={mname} onClick={onMenusItemClick(id)}>{index > 0 ? `第${index}章 ${mname}` : moriginalname}</a>
                 </li>
               ))}
             </ul>
