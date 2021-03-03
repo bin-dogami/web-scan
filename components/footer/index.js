@@ -17,7 +17,7 @@ const Footer = ({ store: { common } }) => {
   return (
     <footer id="footerChunk">
       <Nav>
-        <span onClick={onGoTop}>回到顶部</span>
+        <span id="goTopBtn" onClick={onGoTop}>回到顶部</span>
       </Nav>
       <div className="thks hide">
         <p>感谢支持<strong><Link href="/" title={common.siteName}>{common.siteName}</Link></strong>网。如有问题，请<a onClick={onSuggest}>给我们提建议</a></p>

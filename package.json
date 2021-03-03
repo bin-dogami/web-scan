@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "bdev": "next dev -p 3010",
-    "dev_": "node ./dev-images.js | npm run bdev",
+    "dev_": "npm run bdev",
     "dev": "node server.js",
     "build": "next build",
     "build:start": "npm run build && npm run start",
@@ -14,7 +14,6 @@
   "dependencies": {
     "axios": "^0.21.1",
     "dayjs": "^1.10.4",
-    "lib-flexible": "^0.3.2",
     "mobx": "^6.1.4",
     "mobx-react": "^7.1.0",
     "mobx-react-lite": "^3.2.0",
@@ -29,6 +28,7 @@
     "express": "^4.17.1",
     "postcss-pxtorem": "^5.1.1",
     "sass": "^1.32.5",
-    "sass-loader": "^10.1.1"
+    "sass-loader": "^10.1.1",
+    "vconsole": "^3.4.0"
   }
 }

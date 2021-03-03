@@ -19,7 +19,8 @@ app.prepare().then(() => {
     if (filterPath.length) {
       const path = filterPath[0]
       const id = pathname.replace(`/${path}/`, '')
-      app.render(req, res, `/${path}`, { ...query, id })
+      const params = path === 'search' ? { name: id } : { id }
+      app.render(req, res, `/${path}`, { ...query, ...params })
     } else {
       handle(req, res, parsedUrl)
     }

@@ -5,18 +5,18 @@ import { Provider } from 'mobx-react';
 import rootStore from '@/stores';
 
 function MyApp ({ Component, pageProps }) {
-  const setRem = async () => {
-    await require('lib-flexible')
-  }
+  // const setRem = async () => {
+  //   // await require('lib-flexible')
+  // }
 
-  useEffect(() => {
-    setRem()
-    window.addEventListener('resize', setRem)
+  // useEffect(() => {
+  //   setRem()
+  //   window.addEventListener('resize', setRem)
 
-    return () => {
-      window.removeEventListener('resize', setRem)
-    }
-  }, [])
+  //   return () => {
+  //     window.removeEventListener('resize', setRem)
+  //   }
+  // }, [])
 
   useEffect(() => {
     // @TODO: 这块貌似有问题，本地没问题，线上当前菜单不高亮了

@@ -2430,11 +2430,6 @@ klona@^2.0.4:
   resolved "https://registry.npm.taobao.org/klona/download/klona-2.0.4.tgz"
   integrity sha1-e7Hjr/sMuGJFR+9+j2cI6i4538A=
 
-lib-flexible@^0.3.2:
-  version "0.3.2"
-  resolved "https://registry.npm.taobao.org/lib-flexible/download/lib-flexible-0.3.2.tgz"
-  integrity sha1-BvWnSDIxSi01wSA5vJw8otrqpCY=
-
 line-column@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npm.taobao.org/line-column/download/line-column-1.0.2.tgz"
@@ -2748,6 +2743,11 @@ ms@2.1.2:
   version "2.1.2"
   resolved "https://registry.npm.taobao.org/ms/download/ms-2.1.2.tgz?cache=0&sync_timestamp=1607433856030&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fms%2Fdownload%2Fms-2.1.2.tgz"
   integrity sha1-0J0fNXtEP0kzgqjrPM0YOHKuYAk=
+
+mutation-observer@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/mutation-observer/-/mutation-observer-1.0.3.tgz#42e9222b101bca82e5ba9d5a7acf4a14c0f263d0"
+  integrity sha512-M/O/4rF2h776hV7qGMZUH3utZLO/jK7p8rnNgGkjKUw8zCGjRQPxB8z6+5l8+VjRUQ3dNYu4vjqXYLr+U8ZVNA==
 
 nan@^2.12.1:
   version "2.14.2"
@@ -4203,6 +4203,11 @@ tr46@^1.0.1:
   dependencies:
     punycode "^2.1.0"
 
+transitionEnd@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/transitionEnd/-/transitionEnd-1.0.2.tgz#1914db5b45a7efdc34a01af69285a3a693871633"
+  integrity sha1-GRTbW0Wn79w0oBr2koWjppOHFjM=
+
 traverse@0.6.6:
   version "0.6.6"
   resolved "https://registry.npm.taobao.org/traverse/download/traverse-0.6.6.tgz"
@@ -4365,6 +4370,14 @@ vary@~1.1.2:
   version "1.1.2"
   resolved "https://registry.npm.taobao.org/vary/download/vary-1.1.2.tgz"
   integrity sha1-IpnwLG3tMNSllhsLn3RSShj2NPw=
+
+vconsole@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.npmjs.org/vconsole/-/vconsole-3.4.0.tgz#2cf2ffaa86cd7ab736997a22b63d05627c6ab567"
+  integrity sha512-N9py7Ch9M9nzsigYf8T/WHIOood7jq2MNtUWDqicnrCsPsOZj8Z3NsmFgBmDA3bPKwnzace11HXHxYKPfwV32A==
+  dependencies:
+    mutation-observer "^1.0.3"
+    transitionEnd "^1.0.2"
 
 vm-browserify@1.1.2, vm-browserify@^1.0.1:
   version "1.1.2"

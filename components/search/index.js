@@ -22,14 +22,12 @@ const storeSearchResults = {
     if (!name || !name.trim().length) {
       return
     }
-    const res = storeSearchResults.res
-    res[name.trim()] = list
+    storeSearchResults.res[name.trim()] = list
   },
 }
 
-const Search = ({ store: { common }, defaultId, defaultValue, allwaysShow }) => {
+const Search = ({ store: { common }, defaultValue, allwaysShow }) => {
   // @TODO: 默认为看最新搜索过的 => 热门小说第一个
-  const [id, setId] = useState(+defaultId || 0)
   const [value, setValue] = useState(defaultValue || '')
   const [novels, setNovels] = useState([])
   const [loading, setLoading] = useState(false)
@@ -48,33 +46,31 @@ const Search = ({ store: { common }, defaultId, defaultValue, allwaysShow }) => 
   }, 300), [])
 
   const searchBook = useCallback((value) => {
-    if (loading || !value || !value.trim().length) {
+    if (loading) {
       return
     }
 
     getData(value)
   }, [loading])
 
-  const onSelectBook = (id, title) => () => {
-    setValue(title)
-    setId(id)
-  }
-
   const onSearch = useCallback(e => {
-    const value = e.target.value
-    setValue(value)
-    if (value) {
-      const cachedData = storeSearchResults.getRes(value)
-      if (cachedData) {
-        setShowResult(true)
-        setNovels(cachedData)
+    let _value = e.target.value
+    setValue(_value)
+    if (value !== _value.trim()) {
+      _value = _value.trim()
+      if (_value) {
+        const cachedData = storeSearchResults.getRes(_value)
+        if (cachedData) {
+          setShowResult(true)
+          setNovels(cachedData)
+        } else {
+          searchBook(_value)
+        }
       } else {
-        searchBook(value)
+        setShowResult(false)
       }
-    } else {
-      setShowResult(false)
     }
-  }, [])
+  }, [value])
 
   const onClearValue = () => {
     setValue('')
@@ -94,7 +90,6 @@ const Search = ({ store: { common }, defaultId, defaultValue, allwaysShow }) => 
 
   const clickHideResult = e => {
     setShowResult(false)
-    // e.stopPropagation()
   }
 
   useEffect(() => {
@@ -117,7 +112,11 @@ const Search = ({ store: { common }, defaultId, defaultValue, allwaysShow }) => 
         <ul>
           {novels.length ?
             novels.map(({ id, title, author }) => (
-              <li onClick={onSelectBook(id, title)} key={`${id}`}><strong>{title}</strong><span>作者: {author}</span></li>
+              <li key={`${id}`}>
+                <Link as={`/book/${id}`} href={`/book?id=${id}`} title={`${title}`}>
+                  <strong>{title}</strong><span>作者: {author}</span>
+                </Link>
+              </li>
             )) : (
               loading ? <LoadingText /> : <NoNovelsText />
             )
@@ -125,7 +124,7 @@ const Search = ({ store: { common }, defaultId, defaultValue, allwaysShow }) => 
         </ul> :
         null
       }
-      <Link as={`/search/${value}/${id}`} href={`/search?name=${value}&id=${id}`} title="首页" className={styles.submitBtn}>搜一下</Link>
+      <Link as={`/search/${value}`} href={`/search?name=${value}`} title="首页" className={styles.submitBtn}>搜一下</Link>
     </form>
   )
 }

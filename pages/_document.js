@@ -1,5 +1,7 @@
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 
+import { IS_DEV } from '@/utils'
+
 class MyDocument extends Document {
   // static async getInitialProps (ctx) {
   //   const initialProps = await Document.getInitialProps(ctx)
@@ -9,9 +11,10 @@ class MyDocument extends Document {
   render () {
     return (
       <Html>
+        {IS_DEV ? <script src="https://cdn.bootcss.com/vConsole/3.3.4/vconsole.min.js"></script> : ''}
+        {/* <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" /> */}
         <Head />
-        {/* @TODO: 应该用lib-flexable 去弄这个，这里只解决了book页目录下拉选择时页面放大的问题 */}
-        <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+        <script src="/js/flexible.js"></script>
         <body>
           <Main />
           <NextScript />

@@ -3,7 +3,7 @@ import { observer, inject } from 'mobx-react';
 import { SiteName, Description, scrollIntoViewIfNeeded, scrollIntoView, LoadingText, NoMoreText, useLoading, useScrollThrottle, throttle, getElementToPageTop } from '@/utils/index'
 import { WebStorage, MenusHideKey, SettingHideKey, ThemeKey, FontSizeKey, DefaultTheme, DefaultFontSize } from '@/utils/webStorage'
 import { getPageById, getPrevNextMenus } from '@/utils/request'
-import Image from 'next/image'
+// import Image from 'next/image'
 
 import Head from 'next/head'
 import Top from '@@/top/index'
@@ -251,7 +251,7 @@ const Page = ({ data, id }) => {
 
   // currentId 变化时探查是否要重新请求目录列表，当前目录到最前/后一个目录时，再请求就没法根据目录列表获取上/下一个目录ID了
   const detectNeedResetMenus = () => {
-    if (!page) {
+    if (!page || menusRef.current.length < 24) {
       return
     }
     const index = getCurrentIndex()
@@ -290,7 +290,7 @@ const Page = ({ data, id }) => {
     toDom ? scrollIntoView(toDom) : toPage(id)
   }
   const onPrev = id => e => {
-    e.preventDefault()
+    e && e.preventDefault()
     const prevDom = document.querySelector(`#page${id}`).previousElementSibling
     if (prevDom) {
       scrollIntoView(prevDom)
@@ -300,7 +300,7 @@ const Page = ({ data, id }) => {
     }
   }
   const onNext = id => async e => {
-    e.preventDefault()
+    e && e.preventDefault()
     const nextDom = document.querySelector(`#page${id}`).nextElementSibling
     if (nextDom) {
       const nextId = +nextDom.id.replace('page', '')
@@ -358,6 +358,7 @@ const Page = ({ data, id }) => {
       openTagChangeRef.current = openTagChange
     }, [openTagChange]) */
 
+  const settingOrMenusShowRef = useRef(false)
   const onShowSetting = (e, right) => {
     e && e.preventDefault()
     if (!settingRef.current) {
@@ -366,6 +367,7 @@ const Page = ({ data, id }) => {
     sideNavRef.current && (sideNavRef.current.style = '')
 
     settingRef.current.style = right ? `right: -${right}px` : 'right: 0'
+    settingOrMenusShowRef.current = true
     document.body.classList.add('oh')
     if (!right) {
       scrollIntoViewIfNeeded(settingRef.current.querySelector('.on'))
@@ -379,6 +381,7 @@ const Page = ({ data, id }) => {
     settingRef.current && (settingRef.current.style = '')
 
     sideNavRef.current.style = left ? `left: -${left}px` : 'left: 0'
+    settingOrMenusShowRef.current = true
     document.body.classList.add('oh')
     if (!left) {
       scrollIntoViewIfNeeded(sideNavRef.current.querySelector('.on'))
@@ -388,6 +391,7 @@ const Page = ({ data, id }) => {
     sideNavRef.current && (sideNavRef.current.style = '')
     settingRef.current && (settingRef.current.style = '')
     document.body.classList.remove('oh')
+    settingOrMenusShowRef.current = false
   }
 
   // 滚动时设置 currentId 为当前浏览的页面id
@@ -504,6 +508,49 @@ const Page = ({ data, id }) => {
     onHidePops()
   }
 
+  // 上一章下一章弹窗
+  const noNeedShowFunctionPop = useRef(false)
+  const [showFunctionPop, setShowFunctionPop] = useState(false)
+  const currentPosPageId = useRef(0)
+  const onGoTop = () => {
+    setShowFunctionPop(false)
+    const btn = document.querySelector('#goTopBtn')
+    btn && btn.click()
+  }
+  const onToPrevNextPage = (toPrev = true) => () => {
+    setShowFunctionPop(false)
+    if (!currentPosPageId.current) {
+      return
+    }
+    toPrev ? onPrev(currentPosPageId.current)() : onNext(currentPosPageId.current)()
+  }
+  const showToNextPrevPagePop = (e) => {
+    if (noNeedShowFunctionPop.current || !e.changedTouches || !e.changedTouches.length) {
+      return
+    }
+
+    if (!showFunctionPop) {
+      if (document.documentElement.scrollTop <= 300 || ['a', 'span'].includes(e.target.tagName.toLowerCase())) {
+        return
+      }
+    }
+
+    const clientY = e.changedTouches[0].clientY
+    const clientHeight = document.documentElement.clientHeight
+    // + 100 是因为 clientY 这个值在导航栏等收起时会计算不正确
+    if (clientY > clientHeight / 4 && clientY < clientHeight * 3 / 4 + 100) {
+      if (!showFunctionPop) {
+        const closestPage = e.target.closest('.pages')
+        if (closestPage) {
+          const id = closestPage.id ? closestPage.id.replace('page', '') : ''
+          currentPosPageId.current = id > 0 ? +id : 0
+          console.log('id', id, currentPosPageId.current)
+        }
+      }
+      setShowFunctionPop(!showFunctionPop)
+    }
+  }
+
   // 左/右滑
   const leftSlipStartRef = useRef(null)
   const leftSlipMovingRef = useRef(null)
@@ -511,6 +558,11 @@ const Page = ({ data, id }) => {
   // 是左滑还是右滑
   const isLeftStartRef = useRef(0)
   const onTouchStart = e => {
+    currentPosPageId.current = 0
+    if (settingOrMenusShowRef.current) {
+      noNeedShowFunctionPop.current = true
+    }
+
     const leftSlipPos = getLeftSlipPos(e)
     if (!leftSlipPos) {
       return
@@ -521,6 +573,9 @@ const Page = ({ data, id }) => {
     settingRef.current && settingRef.current.classList.remove('settingTransition')
   }
   const onTouchMove = e => {
+    noNeedShowFunctionPop.current = true
+    showFunctionPop && setShowFunctionPop(false)
+
     if (!leftSlipStartRef.current) {
       return
     }
@@ -550,6 +605,9 @@ const Page = ({ data, id }) => {
     isLeftStart ? onShowMenus(null, maxMenusLeft - moveDistance) : onShowSetting(null, maxMenusLeft - moveDistance)
   }
   const onTouchEnd = e => {
+    showToNextPrevPagePop(e)
+    noNeedShowFunctionPop.current = false
+
     sideNavRef.current && sideNavRef.current.classList.add('navTransition')
     settingRef.current && settingRef.current.classList.add('settingTransition')
     if (!leftSlipStartRef.current || !leftSlipMovingRef.current) {
@@ -601,6 +659,9 @@ const Page = ({ data, id }) => {
     fontSize && setFontSizeClass(fontSize)
 
     document.body.addEventListener('click', clickHideMenus)
+
+    // 使用 VConsole，这插件不支持 import?真垃圾
+    window.VConsole && new VConsole();
 
     return () => {
       document.body.removeEventListener('click', clickHideMenus)
@@ -722,6 +783,15 @@ const Page = ({ data, id }) => {
           </section>
           <Recommends data={recommendBooks} />
           <Footer />
+          <div className={showFunctionPop ? `${styles.functionPop} ${styles.functionPopShow}` : styles.functionPop}>
+            <div className={styles.fpTop}>
+              <span onClick={onToPrevNextPage()}>上一章</span>
+              <span onClick={onGoTop}>回到顶部</span>
+            </div>
+            <div className={styles.fpBottom}>
+              <span onClick={onToPrevNextPage(false)}>下一章</span>
+            </div>
+          </div>
         </>
       }
     </>

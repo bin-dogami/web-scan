@@ -22,6 +22,7 @@ yarn start
 
 ## 开发
 * lib-flexible 如果有css不希望被转化单位则可使用以下方法/*no*/标签 `font-size: 12px; /*no*/`
+* 页面里调试使用 VConsole，在 useEffect 里加上 `window.VConsole && new VConsole();`。这插件不支持 import?真垃圾
 
 ## tips
 ```
