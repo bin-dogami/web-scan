@@ -5,28 +5,14 @@ import { Provider } from 'mobx-react';
 import rootStore from '@/stores';
 
 function MyApp ({ Component, pageProps }) {
-  // const setRem = async () => {
-  //   // await require('lib-flexible')
-  // }
-
   // useEffect(() => {
-  //   setRem()
-  //   window.addEventListener('resize', setRem)
-
-  //   return () => {
-  //     window.removeEventListener('resize', setRem)
+  //   // @TODO: 这块有问题，本地没问题，线上displayName为空
+  //   if (Component.wrappedComponent) {
+  //     const pageName = Component.wrappedComponent.type.displayName
+  //     rootStore.common.setPageName(pageName)
+  //     document.body.setAttribute('class', pageName)
   //   }
-  // }, [])
-
-  useEffect(() => {
-    // @TODO: 这块貌似有问题，本地没问题，线上当前菜单不高亮了
-    console.log(Component.wrappedComponent)
-    if (Component.wrappedComponent) {
-      const pageName = Component.wrappedComponent.type.displayName
-      rootStore.common.setPageName(pageName)
-      document.body.setAttribute('class', pageName)
-    }
-  })
+  // })
 
   return (
     <Provider store={rootStore}>

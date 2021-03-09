@@ -40,7 +40,7 @@ const Types = ({ data, id, page }) => {
 
   // 发请求
   const getData = useCallback(async () => {
-    if (!hasMoreRef.current || loading.current) {
+    if (!hasMoreRef.current || loadingRef.current) {
       return
     }
     loadingRef.current = true
@@ -115,7 +115,7 @@ const Types = ({ data, id, page }) => {
       </Head>
       <Top noH1={true} />
       <Search />
-      <Nav />
+      <Nav name={'Types'} />
       <header className="header crumbs">
         <strong><Link href="/" title="首页">首页</Link></strong>
         <span>/</span>

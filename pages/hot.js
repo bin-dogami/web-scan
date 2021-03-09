@@ -69,7 +69,7 @@ const Hot = ({ data, skip }) => {
       </Head>
       <Top noH1={true} />
       <Search />
-      <Nav />
+      <Nav name={'Hot'} />
       <header className="header crumbs">
         <strong><Link href="/" title="首页">首页</Link></strong>
         <span>/</span>

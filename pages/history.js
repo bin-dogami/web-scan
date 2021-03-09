@@ -19,7 +19,7 @@ const History = () => {
       </Head>
       <Top noH1={true} />
       <Search />
-      <Nav />
+      <Nav name={'History'} />
       <article className="chunkShadow historyWrapper">
         <header className="header crumbs">
           <strong><Link href="/" title="首页">首页</Link></strong>
