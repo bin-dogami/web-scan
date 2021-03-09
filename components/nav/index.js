@@ -4,6 +4,10 @@ import Link from '@@/link/index'
 
 const Nav = ({ name, children }) => {
 
+  useEffect(() => {
+    document.body.setAttribute('class', name)
+  }, [name])
+
   return (
     <nav className="nav">
       <Link href="/" className={!name ? 'on' : ''} title="首页">首页</Link>
