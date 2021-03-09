@@ -6,8 +6,7 @@ export const Description = `${SiteName}提供免费最佳阅读体验，章节�
 export const Keywords = `${SiteName},小说网,手机小说,最新小说推荐,小说阅读网,无弹窗小说网,免费小说下载网,小说阅读器全本免费小说,${SiteName},小说网站排名,小说在线阅读,免费小说阅读`
 
 export const devHost = 1 ? 'localhost' : '192.168.199.226'
-// const productionHost = 'http://data1.zjjdxr.com/';
-const productionHost = '/';
+const productionHost = 'http://m.zjjdxr.com/';
 export const IS_DEV = process.env.NODE_ENV === 'development';
 export const BASE_URL = IS_DEV ? `http://${devHost}:3001/` : productionHost;
 
