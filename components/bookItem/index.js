@@ -4,7 +4,6 @@ import styles from './Book.module.scss'
 import classnames from 'classnames/bind';
 const cx = classnames.bind(styles);
 import Link from '@@/link/index'
-import Image from 'next/image'
 import { IMAGE_HOST } from '@/utils/index'
 
 // @TODO: 每本书也加上最新更新时间，或者以最新更新时间排序，像 http://www.loubiqu.com/paihangbang_allvisit/1.html 这里这样有个时间列表可看
@@ -16,7 +15,7 @@ const BookItem = ({ store: { common }, data: { id, title, author, authorId, desc
     <article className={`bgTheme ${cx({ bookItem: true, isRecommend: isIndex, bookItemOrder: isOrder })}`}>
       <div className={styles.thumb}>
         <Link as={`/book/${id}`} href={`/book?id=${id}`} title={title}>
-          <Image src={`${IMAGE_HOST}/${thumb}`} alt={title} title={title} layout="fill"></Image>
+          <img src={`${IMAGE_HOST}/${thumb}`} alt={title} title={title} />
         </Link>
       </div>
       <div className={styles.info}>

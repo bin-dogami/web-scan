@@ -3,7 +3,7 @@ import { observer, inject } from 'mobx-react';
 import { SiteName, Description, devHost, useHttping, usePagination, usePaginationDrops, scrollIntoView } from '@/utils/index'
 import { getBookById, getMenusByBookId } from '@/utils/request'
 import * as dayjs from 'dayjs'
-import Image from 'next/image'
+// import Image from 'next/image'
 import { IMAGE_HOST } from '@/utils/index'
 
 import Head from 'next/head'
@@ -200,7 +200,7 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
               </header>
               <div className={styles.detail}>
                 <div className={styles.thumb}>
-                  <Image src={`${IMAGE_HOST}/${novel.thumb}`} alt={novel.title} title={novel.title} layout="fill"></Image>
+                  <img src={`${IMAGE_HOST}/${novel.thumb}`} alt={novel.title} title={novel.title} />
                 </div>
                 <div className={styles.info}>
                   <header>
