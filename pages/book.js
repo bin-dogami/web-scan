@@ -4,6 +4,7 @@ import { SiteName, Description, devHost, useHttping, usePagination, usePaginatio
 import { getBookById, getMenusByBookId } from '@/utils/request'
 import * as dayjs from 'dayjs'
 import Image from 'next/image'
+import { IMAGE_HOST } from '@/utils/index'
 
 import Head from 'next/head'
 import Top from '@@/top/index'
@@ -199,7 +200,7 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
               </header>
               <div className={styles.detail}>
                 <div className={styles.thumb}>
-                  <Image src={`/${novel.thumb}`} alt={novel.title} title={novel.title} layout="fill"></Image>
+                  <Image src={`${IMAGE_HOST}/${novel.thumb}`} alt={novel.title} title={novel.title} layout="fill"></Image>
                 </div>
                 <div className={styles.info}>
                   <header>
