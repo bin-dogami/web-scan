@@ -115,6 +115,18 @@
     height: 18px;
     line-height: 18px;
     font-size: 16px;
+
+    select {
+      border: none;
+      background: transparent;
+      font: inherit;
+      font-size: 16px;
+      color: #4e6ef2;
+    }
+
+    option {
+      font-size: 16px;
+    }
   }
 
   span {
@@ -217,9 +229,7 @@
     padding: 0 10px;
     min-width: 100px;
     text-align: center;
-    /* background: #fff; */
     height: 30px;
-    /* border: 1px solid #f00; */
     border-radius: 3px;
     line-height: 30px;
     font-size: 14px;
@@ -244,8 +254,8 @@
     align-items: center;
 
     i {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       background: no-repeat;
       background-size: 100%;
     }

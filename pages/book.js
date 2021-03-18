@@ -57,7 +57,7 @@ const getDescription = (novel) => {
   return Description
 }
 
-const Book = ({ store: { common }, data, id, page, skip }) => {
+const Book = ({ store: { common }, data, id, page, desc, skip }) => {
   const [novel, list, DescMenus, total, recommendBooks] = Array.isArray(data) && data.length >= 5 ? data : [{}, [], [], 0, []]
 
   // title
@@ -75,7 +75,7 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
   // 目录当前在第几页
   const [pageIndex, setPageIndex] = useState(page)
   // 倒序
-  const [isDesc, setIsDesc] = useState(0)
+  const [isDesc, setIsDesc] = useState(desc)
   // 每页章数
   const [pageSize, setPageSize] = useState(defaultPageSize)
   // 分页下拉section
@@ -101,6 +101,9 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
     cachedMenusObj.current = {}
     setTriggerHttp(triggerHttpRef.current + 1)
   }, [])
+  // const onChangeDesc = () => {
+  //   setIsDesc
+  // }
   const pageChange = useCallback(next => {
     if (next < 0) {
       return
@@ -173,6 +176,10 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
       scrollIntoView(document.querySelector('#menus'))
     }
   }, [menusList])
+
+  useEffect(() => {
+    window.history.pushState(null, '', `${id}?page=${pageIndex}&desc=${isDesc ? 1 : 0}`)
+  }, [pageIndex, isDesc])
 
   return (
     <>
@@ -278,7 +285,11 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
               <article className={styles.menusWrapper} id="menus">
                 <header className={styles.menusHeader}>
                   <h3>
-                    {novel.title.length < 10 ? `${novel.title} · 正文章节` : '正文章节'}
+                    {novel.title.length < 10 ? `${novel.title} · ` : ''}
+                    <select value={isDesc} onChange={onDesc}>
+                      <option value={0}>正文正序</option>
+                      <option value={1}>正文倒序</option>
+                    </select>
                   </h3>
                   {/* {isDesc ? <span onClick={onDesc}>正序</span> : null} */}
                   <span onClick={onSetPageSize}>每页 {oppositePageSize} 章</span>
@@ -326,11 +337,11 @@ const Book = ({ store: { common }, data, id, page, skip }) => {
 export async function getServerSideProps ({ query }) {
   const id = query.id && +query.id || 0
   const page = query.page && +query.page || 0
+  const desc = query.desc && +query.desc || 0
   const skip = Math.floor(page / (realRequestNum / defaultPageSize)) * realRequestNum
-  console.log(skip)
-  const res = await getBookById(id, skip)
+  const res = await getBookById(id, skip, desc)
   const data = res.data.data
-  return { props: { data, id, page, skip } }
+  return { props: { data, id, page, desc, skip } }
 }
 
 export default inject('store')(observer(Book))

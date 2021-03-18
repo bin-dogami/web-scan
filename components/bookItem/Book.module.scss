@@ -53,10 +53,16 @@
     }
 
     .title {
-      color: #f7700f;
       font-size: 16px;
       max-width: 70%;
       padding-right: 20px;
+
+      a {
+        color: #1ca9bb;
+        &:link {
+          color: #f7700f;
+        }
+      }
     }
 
     .author {

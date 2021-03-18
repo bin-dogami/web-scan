@@ -94,13 +94,14 @@ export const getBooksByHot = async (skip, size = 20) => {
   })
 }
 
-export const getBookById = async (id, skip = 0) => {
+export const getBookById = async (id, skip = 0, desc = 0) => {
   return await axios({
     url: `${BASE_URL}scan/getBookById/`,
     method: 'get',
     params: {
       id,
-      skip
+      skip,
+      desc
     },
     errorTitle: '获取书本信息错误',
   })

@@ -38,14 +38,19 @@ export const WebStorage = {
   },
   storeBookLastReadMenu (obj) {
     let historys = WebStorage.get(HistoryBooksKey) || []
+    let lastView = null
     if (historys.length) {
       for (const index in historys) {
         const page = historys[index]
         if (page.id === obj.id) {
-          historys.splice(index, 1)
+          lastView = historys.splice(index, 1)
           break
         }
       }
+    }
+    // 只要读过最后一章，有数据更新时就给提示有新章节
+    if (lastView && lastView.isLast) {
+      obj = true
     }
     historys.unshift(obj)
     historys.length > maxStoredHistoryLen && (historys = historys.splice(historys.length - maxStoredHistoryLen))

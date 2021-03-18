@@ -70,7 +70,7 @@ h3, h4, h5, h6{ font-size: 14px;}
 * 2. Remove gaps in links underline in iOS 8+ and Safari 8+.
 * 3. 当在iOS上触摸并按住一个元素的时候，Safari会展示一个关于这个链接的callout信息。禁用该属性。
 */
-a{
+a {
   text-decoration:none;
   background-color:transparent;/* 1 */
   -webkit-text-decoration-skip: objects;/* 2 */
@@ -500,8 +500,17 @@ footer  {
     font-size: 16px;
   }
 
+  a {
+    color: #1ca9bb;
+    &:link {
+      color: #333;
+    }
+  }
+
   .on {
-    color: #f7700f;
+    a {
+      color: #f7700f;
+    }
     border-left: 3px solid #f7700f;
   }
 }
@@ -819,7 +828,7 @@ footer  {
     width: 0;
     height: 0;
     border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
+    border-right: 5px solid transparent!important;
     border-bottom: 5px solid rgba(0,0,0,.75);
   }
 }

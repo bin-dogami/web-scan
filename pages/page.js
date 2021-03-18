@@ -79,10 +79,12 @@ const getLeftSlipPos = e => {
   return null
 }
 
-const useStateRef = (menus, currentId, hasMore) => {
+const useStateRef = (menus, currentId, hasMore, menusTipShow, settingTipShow) => {
   const menusRef = useRef(menus)
   const currentIdRef = useRef(currentId)
   const hasMoreRef = useRef(hasMore)
+  const menusTipShowRef = useRef(menusTipShow)
+  const settingTipShowRef = useRef(settingTipShow)
 
   useEffect(() => {
     menusRef.current = menus
@@ -96,7 +98,15 @@ const useStateRef = (menus, currentId, hasMore) => {
     hasMoreRef.current = hasMore
   }, [hasMore])
 
-  return [menusRef, currentIdRef, hasMoreRef]
+  useEffect(() => {
+    menusTipShowRef.current = menusTipShow
+  }, [menusTipShow])
+
+  useEffect(() => {
+    settingTipShowRef.current = settingTipShow
+  }, [settingTipShow])
+
+  return [menusRef, currentIdRef, hasMoreRef, menusTipShowRef, settingTipShowRef]
 }
 
 const Page = ({ data, id }) => {
@@ -109,6 +119,7 @@ const Page = ({ data, id }) => {
   const description = _title ? `${_title}最新章节阅读，${_title}是一部${page.typename},由${page.author}创作,${SiteName}提供最新更新章节。${_mname}` : Description
   const keywords = _title ? `${_mname},${_title}最新章节,${page.typename}阅读` : SiteName
 
+  const [pageName, setPageName] = useState(page && page.mname || page.realName || page.title || '')
   const [menus, setMenus] = useState(menuList)
   const [currentId, setCurrentId] = useState(id)
   const [list, setList] = useState(page ? [page] : [])
@@ -124,8 +135,12 @@ const Page = ({ data, id }) => {
   // 这个 loading 给上一页或点击目录里链接时用的
   const [reGetPageloading, setReGetPageloading] = useState(false)
   const reGetPageloadingRef = useRef(reGetPageloading)
+
+  const [menusTipShow, setMenusTipShow] = useState(false)
+  const [settingTipShow, setSettingTipShow] = useState(false)
+
   // @TODO: 其他的看是不是还需要扩充一下
-  const [menusRef, currentIdRef, hasMoreRef] = useStateRef(menus, currentId, hasMore)
+  const [menusRef, currentIdRef, hasMoreRef, menusTipShowRef, settingTipShowRef] = useStateRef(menus, currentId, hasMore, menusTipShow, settingTipShow)
 
   // 获取 page 数据
   const getData = useCallback(async (id, toNewId = true, reGetting = false) => {
@@ -148,6 +163,7 @@ const Page = ({ data, id }) => {
       listRef.current = _list
       setList(_list)
       toNewId && scrollIntoView(document.querySelector(`#page${id}`))
+      reGetting && page.mname && setPageName(page.mname)
     }
     if (reGetting) {
       reGetPageloadingRef.current = false
@@ -462,9 +478,7 @@ const Page = ({ data, id }) => {
     !hasMore && storeViewHistory()
   }, [hasMore])
 
-  // storages
-  const [menusTipShow, setMenusTipShow] = useState(true)
-  const [settingTipShow, setSettingTipShow] = useState(true)
+
 
   // 这个功能之后弄
   // const isMovingRef = useRef(false)
@@ -489,14 +503,15 @@ const Page = ({ data, id }) => {
   //     }
   //   }, 300);
   // }
+
+  // storages
   const clickHideMenus = e => {
-    // onChangePage(e)
     e.stopPropagation()
-    if (menusTipShow) {
+    if (menusTipShowRef.current) {
       setMenusTipShow(false)
       WebStorage.set(MenusHideKey, true)
     }
-    if (settingTipShow) {
+    if (settingTipShowRef.current) {
       setSettingTipShow(false)
       WebStorage.set(SettingHideKey, true)
     }
@@ -544,7 +559,7 @@ const Page = ({ data, id }) => {
         if (closestPage) {
           const id = closestPage.id ? closestPage.id.replace('page', '') : ''
           currentPosPageId.current = id > 0 ? +id : 0
-          console.log('id', id, currentPosPageId.current)
+          // console.log('id', id, currentPosPageId.current)
         }
       }
       setShowFunctionPop(!showFunctionPop)
@@ -647,15 +662,11 @@ const Page = ({ data, id }) => {
 
   useEffect(() => {
     // tips 提示只出现一次
-    if (WebStorage.get(MenusHideKey)) {
-      setMenusTipShow(false)
-    }
-    if (WebStorage.get(SettingHideKey)) {
-      setSettingTipShow(false)
-    }
+    setMenusTipShow(!WebStorage.get(MenusHideKey))
+    setSettingTipShow(!WebStorage.get(SettingHideKey))
     const theme = WebStorage.get(ThemeKey)
     theme && setSelectTheme(theme)
-    const fontSize = WebStorage.get(FontSizeKey,)
+    const fontSize = WebStorage.get(FontSizeKey)
     fontSize && setFontSizeClass(fontSize)
 
     document.body.addEventListener('click', clickHideMenus)
@@ -687,7 +698,7 @@ const Page = ({ data, id }) => {
               <span>/</span>
               <strong><Link as={`/book/${page.novelId}`} href={`/book?id=${page.novelId}`} title={page.title}>{page.title}</Link></strong>
               <span>/</span>
-              <h1>{page.mname || page.realName || page.title}</h1>
+              <h1>{pageName}</h1>
             </header>
             <div className={reGetPageloading ? 'loadingOnWrapper pagesWrapper' : 'pagesWrapper'} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
               {list.map((page, index) => {

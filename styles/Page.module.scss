@@ -95,6 +95,13 @@
   justify-content: space-between;
   margin-bottom: 15px;
 
+  a {
+    color: #1ca9bb;
+    &:link {
+      color: #4e6ef2;
+    }
+  }
+
   a, span {
     padding: 0 10px;
     position: relative;
