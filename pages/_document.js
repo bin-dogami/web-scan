@@ -18,6 +18,7 @@ class MyDocument extends Document {
         <body>
           <Main />
           <NextScript />
+          <script type="text/javascript" src="https://s9.cnzz.com/z_stat.php?id=1279768164&web_id=1279768164"></script>
         </body>
       </Html>
     )
