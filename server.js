@@ -16,10 +16,18 @@ app.prepare().then(() => {
     const { pathname, query } = parsedUrl
 
     const filterPath = hasParamsPath.filter((p) => pathname.includes(`/${p}/`))
+    // console.log(parsedUrl)
     if (filterPath.length) {
       const path = filterPath[0]
-      const id = pathname.replace(`/${path}/`, '')
-      const params = path === 'search' ? { name: id } : { id }
+      const value = pathname.replace(`/${path}/`, '')
+      let params = path === 'search' ? { name: value } : { id: value }
+      if (path === 'book') {
+        const [id, page, desc] = value.split('/')
+        params = {
+          id, page, desc
+        }
+      }
+      // console.log(pathname, params)
       app.render(req, res, `/${path}`, { ...query, ...params })
     } else {
       handle(req, res, parsedUrl)

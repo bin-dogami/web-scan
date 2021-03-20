@@ -674,6 +674,8 @@ const Page = ({ data, id }) => {
     // 使用 VConsole，这插件不支持 import?真垃圾
     window.VConsole && new VConsole();
 
+    // console.log(window.history)
+
     return () => {
       document.body.removeEventListener('click', clickHideMenus)
     }

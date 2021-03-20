@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { observer, inject } from 'mobx-react';
+// import { useRouter } from 'next/router'
 import { SiteName, Description, devHost, useHttping, usePagination, usePaginationDrops, scrollIntoView } from '@/utils/index'
 import { getBookById, getMenusByBookId } from '@/utils/request'
 import * as dayjs from 'dayjs'
@@ -58,6 +59,7 @@ const getDescription = (novel) => {
 }
 
 const Book = ({ store: { common }, data, id, page, desc, skip }) => {
+  // const router = useRouter()
   const [novel, list, DescMenus, total, recommendBooks] = Array.isArray(data) && data.length >= 5 ? data : [{}, [], [], 0, []]
 
   // title
@@ -135,6 +137,7 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
     e.preventDefault()
     if (pageIndex + 1 < menuOptions.length) {
       pageChange(pageIndex + 1)
+      // router.push(`/book/${id}/${pageIndex + 1}`)
     }
   }, [pageIndex, pageChange, menuOptions])
 
@@ -177,9 +180,11 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
     }
   }, [menusList])
 
-  useEffect(() => {
-    window.history.pushState(null, '', `${id}?page=${pageIndex}&desc=${isDesc ? 1 : 0}`)
-  }, [pageIndex, isDesc])
+  // useEffect(() => {
+  //   // window.history.replaceState(null, '', `${id}?page=${pageIndex}&desc=${isDesc ? 1 : 0}`)
+  //   window.history.replaceState(null, '', `/book/${id}/${pageIndex}/${isDesc ? 1 : 0}`)
+  //   // console.log(window.history)
+  // }, [pageIndex, isDesc])
 
   return (
     <>
@@ -335,6 +340,7 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
 }
 
 export async function getServerSideProps ({ query }) {
+  // console.log(query)
   const id = query.id && +query.id || 0
   const page = query.page && +query.page || 0
   const desc = query.desc && +query.desc || 0
