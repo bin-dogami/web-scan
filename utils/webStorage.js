@@ -1,5 +1,5 @@
 
-export const DefaultTheme = 1
+export const DefaultTheme = 2
 export const DefaultFontSize = ""
 
 export const MenusHideKey = 'menus-hide-key'

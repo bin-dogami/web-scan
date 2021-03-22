@@ -953,6 +953,12 @@ footer  {
     background-color: #eaeaea;
   }
 
+  .sideNav {
+    .noMore:after{
+      background-color: #f3f3f3;
+    }
+  }
+
   .sideSetting, .sideNav {
     background-color: #f3f3f3;
   }
@@ -972,27 +978,49 @@ footer  {
 
 // 黄色
 .pageTheme2 {
-  background-color: #fff3dc;
+  background-color: #fbecd7;
+
+  .top, .nav {
+    box-shadow: 0 0 5px 1px rgba(0, 0, 0, .1);
+  }
+
+  .chunkShadow {
+    box-shadow: 0 0 5px 1px rgba(0, 0, 0, .1);
+  }
+
+  .bgTheme {
+    position: relative;
+    &:after {
+      content: '';
+      height: 0.21333rem;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #fbecd7;
+      box-shadow: 0 0 5px 1px rgba(0, 0, 0, .1) inset;
+    }
+  }
 
   .top, .nav, .header, .pages, footer, .bgTheme {
-    background-color: #fbf6ec;
+    background-color: #F8F1E4;
   }
 
   .header {
-    border-bottom-color: #fff3dc;
+    border-bottom-color: #efe2d1;
   }
 
   .noMore:after{
-    background-color: #fff3dc;
+    background-color: #fbecd7;
   }
 
   .sideSetting, .sideNav {
-    background-color: #fbf6ec;
+    background-color: #F8F1E4;
   }
 
   .sideNav {
     .noMore:after {
-      background-color: #fbf6ec;
+      background-color: #F8F1E4;
     }
   }
 
@@ -1016,6 +1044,12 @@ footer  {
 
   .top, .nav, .header, .pages, footer, .bgTheme {
     background-color: #1a1a1a;
+  }
+
+  .sideNav {
+    a:link {
+      color: #999;
+    }
   }
 
   .header {
@@ -1069,6 +1103,12 @@ footer  {
 
   .noMore:after, .sideSetting, .sideNav {
     background-color: #b4cfea;
+  }
+
+  .sideNav {
+    .noMore:after{
+      background-color: #d0e0f3;
+    }
   }
 
   .sideSetting, .sideNav {
