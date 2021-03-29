@@ -7,6 +7,9 @@ yarn dev
 // 生产环境，得先 build 编译了文件再 start
 yarn build
 yarn start
+(build:start 别用了，使用 pm2 开启服务)
+# pm2 启动
+pm2 start npm --name scan -- run start
 ```
 
 ## 环境变量

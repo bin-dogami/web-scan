@@ -1,3 +1,4 @@
+// 弃用了，图片不用 next.js 输出，用 nginx 输出
 const express = require('express')
 const app = express()
 const path = require('path')

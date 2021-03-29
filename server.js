@@ -1,6 +1,6 @@
 // https://www.nextjs.cn/docs/advanced-features/custom-server
 // 只用于 dev，给 Link as 导致的 404 问题作一次转发，生产环境应该使用nginx转发
-const { createServer } = require('http')
+const { createServer, request } = require('http')
 const { parse } = require('url')
 const next = require('next')
 
@@ -9,6 +9,34 @@ const app = next({ dev })
 const handle = app.getRequestHandler()
 
 const hasParamsPath = ['complete', 'types', 'book', 'author', 'page', 'hot', 'search', '404']
+
+const collectUserVisitInfo = (data) => {
+  const options = {
+    hostname: 'localhost',
+    port: 3001,
+    path: '/scan/collectMHostUserVisit',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  }
+
+  const req = request(options, res => {
+    console.log(`（收集用户设备信息请求）请状态码: ${res.statusCode}`)
+
+    res.setEncoding('utf8');
+    res.on('data', d => {
+      process.stdout.write(`success: ${d} \n\n`)
+    })
+  })
+
+  req.on('error', error => {
+    process.stdout.write(`error: ${error} \n\n`)
+  })
+
+  req.write(data);
+  req.end()
+}
 
 app.prepare().then(() => {
   createServer((req, res) => {
@@ -27,8 +55,8 @@ app.prepare().then(() => {
           id, page, desc
         }
       }
-      // console.log(pathname, params)
       app.render(req, res, `/${path}`, { ...query, ...params })
+      collectUserVisitInfo(JSON.stringify({ info: req.headers }))
     } else {
       handle(req, res, parsedUrl)
     }
