@@ -56,7 +56,7 @@ app.prepare().then(() => {
         }
       }
       app.render(req, res, `/${path}`, { ...query, ...params })
-      collectUserVisitInfo(JSON.stringify({ info: req.headers }))
+      // collectUserVisitInfo(JSON.stringify({ info: req.headers }))
     } else {
       handle(req, res, parsedUrl)
     }
