@@ -279,7 +279,7 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
                   <ul className={cx({ menuList: true, descList: true })}>
                     {DescMenus.map(({ id, mname, moriginalname, index }) => (
                       <li key={id}>
-                        <Link as={`/page/${id}`} href={`/page?id=${id}`} title={index > 0 ? `第${index}章 ${mname}` : moriginalname}>
+                        <Link as={`/page/${id}`} href={`/page?id=${id}`} openBlank={true} title={index > 0 ? `第${index}章 ${mname}` : moriginalname}>
                           <span className={cx({ mr10: index > 0 })}>{index > 0 ? `第${index}章` : ''}</span><strong>{index > 0 ? mname : moriginalname}</strong>
                         </Link>
                       </li>
@@ -303,7 +303,7 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
                   <ul className={cx({ menuList: true, fixBlank: menusList.length % 2 !== 0 })}>
                     {menusList.map(({ id, mname, moriginalname, index }) => (
                       <li key={id}>
-                        <Link as={`/page/${id}`} href={`/page?id=${id}`} title={index > 0 ? `第${index}章 ${mname}` : moriginalname}>
+                        <Link as={`/page/${id}`} href={`/page?id=${id}`} openBlank={true} title={index > 0 ? `第${index}章 ${mname}` : moriginalname}>
                           <span className={cx({ mr10: index > 0 })}>{index > 0 ? `第${index}章` : ''}</span><strong>{index > 0 ? mname : moriginalname}</strong>
                         </Link>
                       </li>
