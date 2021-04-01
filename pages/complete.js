@@ -63,9 +63,9 @@ const Complete = ({ data, skip }) => {
   return (
     <>
       <Head>
-        <title>{`完本小说排行榜_好看的完本小说下载网_${SiteName}`}</title>
-        <meta name="description" content={`${SiteName}完本小说排行榜为大家提供更好看的完本小说,方便你的在线阅读及下载,更多精彩完本小说尽在${SiteName}。`}></meta>
-        <meta name="keywords" content={`完本小说,完本小说排行榜,完本小说网,好看的完本小说,完本小说下载,全本小说网`}></meta>
+        <title>{`完本免费小说排行榜_好看的完本免费小说在线阅读网_${SiteName}`}</title>
+        <meta name="description" content={`${SiteName}完本小说排行榜为大家提供更好看的完本免费小说,全本免费小说,方便你的在线阅读,更多精彩完本小说尽在${SiteName}。`}></meta>
+        <meta name="keywords" content={`完本小说,完本小说排行榜,完本小说网,好看的完本小说,完本小说下载,全本小说网,完本免费阅读,全本免费阅读`}></meta>
       </Head>
       <Top noH1={true} />
       <Search />

@@ -23,6 +23,7 @@ const Query = ({ data, name }) => {
       <Nav />
       <Search allwaysShow={true} />
       <header className="commonHeader searchHeader">
+        {/* 这里的 #name# 中的 name 为空的时候 为啥会显示 undefined */}
         <h1>查询{name ? ` #${name}# 共${novels.length}条结果` : ''}</h1>
       </header>
       <BookList books={novels} />

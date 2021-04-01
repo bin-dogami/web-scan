@@ -463,9 +463,9 @@ const Page = ({ data, id }) => {
   }
 
   useEffect(() => {
-    // window && window.history.replaceState(null, null, window.location.href.replace(/page\/[^\/]+/, `page/${currentId}`))
-    // shallow，静默更改 hash，就是不触发 getServerSideProps的执行
-    router.replace(`/page?id=${currentId}`, `page/${currentId}`, { shallow: true })
+    window && window.history.replaceState(null, null, window.location.href.replace(/page\/[^\/]+/, `page/${currentId}`))
+    // shallow，静默更改 hash，就是不触发 getServerSideProps的执行，router.replace 切换页面时会有问题
+    // router.replace(`/page?id=${currentId}`, `page/${currentId}`, { shallow: true })
 
     // 存 storage 里
     storeViewHistory()
