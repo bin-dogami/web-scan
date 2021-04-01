@@ -299,6 +299,7 @@ const Page = ({ data, id }) => {
       scrollIntoViewIfNeeded(document.querySelector('.searchBtn'))
     }, 100);
     getData(id, true, true)
+    // @TODO: 目录里点击上面的某一章时，出现了两个问题，一是没有自动加载下一章，另一个是往下滚动到底时也没有触发加载下一页，可能这两个问题是同一个
   }
   const onMenusItemClick = id => e => {
     e.preventDefault()
@@ -690,13 +691,15 @@ const Page = ({ data, id }) => {
       </Head>
       <Top noH1={true} />
       <Search />
-      <Nav />
+      <Nav name={'Page'} />
       {!page ?
         <Page404>此章节不存在哦!</Page404> :
         <>
           <article className="chunkShadow">
             <header className="header crumbs">
-              <strong><Link href="/" title="首页">首页</Link></strong>
+              <strong>
+                <Link as={`/types/${page.typeid}`} href={`/types?id=${page.typeid}`} title={page.typename}>{page.typename}</Link>
+              </strong>
               <span>/</span>
               <strong><Link as={`/book/${page.novelId}`} href={`/book?id=${page.novelId}`} title={page.title}>{page.title}</Link></strong>
               <span>/</span>

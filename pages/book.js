@@ -196,13 +196,15 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
       </Head>
       <Top noH1={true} />
       <Search />
-      <Nav />
+      <Nav name={'Book'} />
       {!novel ?
         <Page404>找不到这本书哦!</Page404> :
         <>
           <article className="chunkShadow">
             <header className="header crumbs">
-              <strong><Link href="/" title="首页">首页</Link></strong>
+              <strong>
+                <Link as={`/types/${novel.typeid}`} href={`/types?id=${novel.typeid}`} title={novel.typename}>{novel.typename}</Link>
+              </strong>
               <span>/</span>
               <strong>{novel.title}</strong>
             </header>
