@@ -701,7 +701,7 @@ const Page = ({ data, id }) => {
                 <Link as={`/types/${page.typeid}`} href={`/types?id=${page.typeid}`} title={page.typename}>{page.typename}</Link>
               </strong>
               <span>/</span>
-              <strong><Link as={`/book/${page.novelId}`} href={`/book?id=${page.novelId}`} title={page.title}>{page.title}</Link></strong>
+              <strong><Link as={`/book/${page.novelId}`} href={`/book?id=${page.novelId}`} title={page.title} forBidScrollToTop={true}>{page.title}</Link></strong>
               <span>/</span>
               <h1>{pageName}</h1>
             </header>
