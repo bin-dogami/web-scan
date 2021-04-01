@@ -226,8 +226,7 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
                   <ul>
                     <li>
                       <strong>
-                        类别：
-                    <Link href={`/types/${novel.typeid}`}>
+                        类别：<Link href={`/types/${novel.typeid}`}>
                           {novel.typename}
                         </Link>
                       </strong>
@@ -238,8 +237,7 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
                     <li><strong>更新时间：{dayjs(novel.updatetime).format('YYYY-MM-DD HH:mm')}</strong></li>
                     <li>
                       <strong>
-                        最新章节：
-                    {lastMenu && lastMenu.id ?
+                        最新章节：{lastMenu && lastMenu.id ?
                           <Link as={`/page/${lastMenu.id}`} href={`/page?id=${lastMenu.id}`} className={styles.lastMenu}>
                             {lastMenu.mname}
                           </Link> : ''

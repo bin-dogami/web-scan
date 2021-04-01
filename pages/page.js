@@ -3,7 +3,9 @@ import { observer, inject } from 'mobx-react';
 import { SiteName, Description, scrollIntoViewIfNeeded, scrollIntoView, LoadingText, NoMoreText, useLoading, useScrollThrottle, throttle, getElementToPageTop } from '@/utils/index'
 import { WebStorage, MenusHideKey, SettingHideKey, ThemeKey, FontSizeKey, DefaultTheme, DefaultFontSize } from '@/utils/webStorage'
 import { getPageById, getPrevNextMenus } from '@/utils/request'
+import { useRouter } from 'next/router'
 // import Image from 'next/image'
+
 
 import Head from 'next/head'
 import Top from '@@/top/index'
@@ -110,6 +112,7 @@ const useStateRef = (menus, currentId, hasMore, menusTipShow, settingTipShow) =>
 }
 
 const Page = ({ data, id }) => {
+  const router = useRouter()
   const [page, menuList, recommendBooks] = Array.isArray(data) && data.length >= 3 ? data : [Array.isArray(data) ? data[0] : null, [], []]
 
   // title
@@ -460,7 +463,9 @@ const Page = ({ data, id }) => {
   }
 
   useEffect(() => {
-    window && window.history.replaceState(null, null, window.location.href.replace(/page\/[^\/]+/, `page/${currentId}`))
+    // window && window.history.replaceState(null, null, window.location.href.replace(/page\/[^\/]+/, `page/${currentId}`))
+    // shallow，静默更改 hash，就是不触发 getServerSideProps的执行
+    router.replace(`/page?id=${currentId}`, `page/${currentId}`, { shallow: true })
 
     // 存 storage 里
     storeViewHistory()
