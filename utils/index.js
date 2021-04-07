@@ -9,7 +9,7 @@ export const devHost = 1 ? 'localhost' : '192.168.31.231'
 const productionHost = 'https://m.zjjdxr.com/';
 export const IS_DEV = process.env.NODE_ENV === 'development';
 export const BASE_URL = IS_DEV ? `http://${devHost}:3001/` : productionHost;
-export const IMAGE_HOST = ''
+export const IMAGE_HOST = 'https://m.zjjdxr.com'
 
 // 请求数据, triggerHttp 为自增数
 export const useHttping = (triggerHttp, httpFn) => {
