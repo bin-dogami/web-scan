@@ -180,6 +180,7 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
     }
   }, [menusList])
 
+  // @TODO: 使用 router + shallow 应该可以解决这个问题
   // useEffect(() => {
   //   // window.history.replaceState(null, '', `${id}?page=${pageIndex}&desc=${isDesc ? 1 : 0}`)
   //   window.history.replaceState(null, '', `/book/${id}/${pageIndex}/${isDesc ? 1 : 0}`)
@@ -202,6 +203,8 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
         <>
           <article className="chunkShadow">
             <header className="header crumbs">
+              <strong><Link href="/" title="首页">首页</Link></strong>
+              <span>/</span>
               <strong>
                 <Link as={`/types/${novel.typeid}`} href={`/types?id=${novel.typeid}`} title={novel.typename}>{novel.typename}</Link>
               </strong>

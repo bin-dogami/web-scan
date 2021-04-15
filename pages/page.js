@@ -484,8 +484,6 @@ const Page = ({ data, id }) => {
     !hasMore && storeViewHistory()
   }, [hasMore])
 
-
-
   // 这个功能之后弄
   // const isMovingRef = useRef(false)
   // const scrollToPage = (clientHeight, toPrev) => {
@@ -702,6 +700,8 @@ const Page = ({ data, id }) => {
         <>
           <article className="chunkShadow">
             <header className="header crumbs">
+              <strong><Link href="/" title="首页">首页</Link></strong>
+              <span>/</span>
               <strong>
                 <Link as={`/types/${page.typeid}`} href={`/types?id=${page.typeid}`} title={page.typename}>{page.typename}</Link>
               </strong>
