@@ -6,7 +6,7 @@ import { WebStorage, HistoryBooksKey } from '@/utils/webStorage'
 import BookItemSimple from '@@/bookItemSimple/index'
 import NoData from '@@/noData/index'
 
-const HistoryRead = ({ getAll }) => {
+const HistoryRead = ({ getAll, excluded }) => {
   const [loaded, setLoaded] = useState(false)
   const [novels, setNovels] = useState([])
 
@@ -15,7 +15,25 @@ const HistoryRead = ({ getAll }) => {
     if (historys) {
       let list = Object.values(historys)
       if (!getAll) {
-        list = list.slice(0, 5)
+        if (Array.isArray(excluded)) {
+          const _excluded = excluded.map(({ pageId }) => pageId)
+          const _list = []
+          const repeatList = []
+          while (list.length) {
+            const item = list.shift()
+            if (!_excluded.includes(item.pageId)) {
+              _list.push(item)
+            } else {
+              repeatList.push(item)
+            }
+            if (_list.length >= 5) {
+              break
+            }
+          }
+          list = _list.length >= 5 ? _list : [..._list, ...repeatList].slice(0, 5)
+        } else {
+          list = list.slice(0, 5)
+        }
       }
       setNovels(list)
 

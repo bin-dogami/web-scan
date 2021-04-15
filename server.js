@@ -8,35 +8,35 @@ const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
 
-const hasParamsPath = ['complete', 'types', 'book', 'author', 'page', 'hot', 'search', '404']
+const hasParamsPath = ['complete', 'types', 'book', 'author', 'page', 'hot', 'updates', 'search', '404']
 
-const collectUserVisitInfo = (data) => {
-  const options = {
-    hostname: 'localhost',
-    port: 3001,
-    path: '/scan/collectMHostUserVisit',
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  }
+// const collectUserVisitInfo = (data) => {
+//   const options = {
+//     hostname: 'localhost',
+//     port: 3001,
+//     path: '/scan/collectMHostUserVisit',
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//     }
+//   }
 
-  const req = request(options, res => {
-    console.log(`（收集用户设备信息请求）请状态码: ${res.statusCode}`)
+//   const req = request(options, res => {
+//     console.log(`（收集用户设备信息请求）请状态码: ${res.statusCode}`)
 
-    res.setEncoding('utf8');
-    res.on('data', d => {
-      process.stdout.write(`success: ${d} \n\n`)
-    })
-  })
+//     res.setEncoding('utf8');
+//     res.on('data', d => {
+//       process.stdout.write(`success: ${d} \n\n`)
+//     })
+//   })
 
-  req.on('error', error => {
-    process.stdout.write(`error: ${error} \n\n`)
-  })
+//   req.on('error', error => {
+//     process.stdout.write(`error: ${error} \n\n`)
+//   })
 
-  req.write(data);
-  req.end()
-}
+//   req.write(data);
+//   req.end()
+// }
 
 app.prepare().then(() => {
   createServer((req, res) => {
@@ -44,7 +44,6 @@ app.prepare().then(() => {
     const { pathname, query } = parsedUrl
 
     const filterPath = hasParamsPath.filter((p) => pathname.includes(`/${p}/`))
-    // console.log(parsedUrl)
     if (filterPath.length) {
       const path = filterPath[0]
       const value = pathname.replace(`/${path}/`, '')
@@ -56,7 +55,6 @@ app.prepare().then(() => {
         }
       }
       app.render(req, res, `/${path}`, { ...query, ...params })
-      // collectUserVisitInfo(JSON.stringify({ info: req.headers }))
     } else {
       handle(req, res, parsedUrl)
     }

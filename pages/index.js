@@ -19,12 +19,14 @@ const cx = classnames.bind(styles);
 const Home = ({ data }) => {
   const [typesData, setTypesData] = useState([]);
   const [hotsData, setHotsData] = useState([]);
+  const [updatesData, setUpdatesData] = useState([]);
 
   useEffect(() => {
     if (Array.isArray(data) && data.length > 1) {
-      const [types, hots] = data
+      const [types, hots, updates] = data
       setTypesData(types);
       setHotsData(hots)
+      setUpdatesData(updates)
     }
   }, [data])
 
@@ -39,24 +41,25 @@ const Home = ({ data }) => {
       <Search />
       <Nav />
       {/* banner */}
+      {/* 最新更新的小说及章节 */}
+      <article className={`homeHistory ${styles.typesChunk}`}>
+        <header className={styles.chunkTitle}>
+          <h2><Link href={`/updates`} title="最新更新">最新更新</Link></h2>
+          <Link href={`/updates`} title="更多最新更新" className={styles.more}>更多...</Link>
+        </header>
+        <ul className={styles.list}>
+          {updatesData.map((item, index) => (
+            <BookItemSimple data={item} key={index} hasMenu={true} />
+          ))}
+        </ul>
+      </article>
       <article className={`homeHistory ${styles.typesChunk}`}>
         <header className={styles.chunkTitle}>
           <h2><Link href={`/history`} title="最新阅读">最新阅读</Link></h2>
           <Link href={`/history`} title="更多最新阅读" className={styles.more}>更多...</Link>
         </header>
-        <HistoryRead />
+        <HistoryRead excluded={updatesData} />
       </article>
-      {/* 没有最新阅读的就展示推荐的
-      <article className={cx({ typesChunk: true, mt8: true })}>
-        <header>
-          <h2 style={{ display: 'none' }}>推荐小说</h2>
-        </header>
-        <ul className={styles.list}>
-          {books.map((item, index) => (
-              <BookItem data={item} key={index} />
-            ))}
-        </ul>
-      </article> */}
       <article className={styles.typesChunk}>
         <header className={styles.chunkTitle}>
           <h2><Link href="/hot" title="热门小说">热门小说</Link></h2>

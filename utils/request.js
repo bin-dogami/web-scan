@@ -156,3 +156,12 @@ export const getAuthorData = async (id) => {
     errorTitle: '获取作者书本列表错误',
   })
 }
+
+export const getLastUpdates = async () => {
+  return await axios({
+    url: `${BASE_URL}scan/getLastUpdates/`,
+    method: 'get',
+    params: {},
+    errorTitle: '获取最新更新错误',
+  })
+}

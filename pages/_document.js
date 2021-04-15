@@ -24,15 +24,15 @@ class MyDocument extends Document {
   render () {
     return (
       <Html>
-        {IS_DEV ? <script src="https://cdn.bootcss.com/vConsole/3.3.4/vconsole.min.js"></script> : ''}
+        {/* {IS_DEV ? <script src="https://cdn.bootcss.com/vConsole/3.3.4/vconsole.min.js"></script> : ''} */}
         {/* <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" /> */}
         <Head />
         <script src="/js/flexible.js"></script>
         <body>
           <Main />
           <NextScript />
-          <script type="text/javascript" src="https://s9.cnzz.com/z_stat.php?id=1279768164&web_id=1279768164"></script>
-          <script dangerouslySetInnerHTML={baiduHmScript()} />
+          {IS_DEV ? '' : <script type="text/javascript" src="https://s9.cnzz.com/z_stat.php?id=1279768164&web_id=1279768164"></script>}
+          {IS_DEV ? '' : <script dangerouslySetInnerHTML={baiduHmScript()} />}
         </body>
       </Html>
     )
