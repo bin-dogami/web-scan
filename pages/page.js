@@ -119,7 +119,7 @@ const Page = ({ data, id }) => {
   const _title = page && page.title ? page.title : ''
   const _mname = page ? ((page.index > 0 ? `第${page.index}章 ` : '') + page.mname) : ''
   const title = _title ? `${_title}_${_mname}_${SiteName}_免费看小说` : `${SiteName}_免费看小说`
-  const description = _title ? `${_title}最新章节阅读，${_title}是一部${page.typename},由${page.author}创作,${SiteName}提供最新更新章节。${_mname}` : Description
+  const description = _title ? `${_title}最新章节阅读，${_title}是一部${page.typename},${_title}由${page.author}创作,${SiteName}提供最新更新章节。${_mname}` : Description
   const keywords = _title ? `${_mname},${_title}最新章节,${page.typename}阅读` : SiteName
 
   const [pageName, setPageName] = useState(page && page.mname || page.realName || page.title || '')

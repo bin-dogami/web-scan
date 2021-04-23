@@ -50,8 +50,8 @@ const useStateRef = (pageIndex, isDesc, pageSize, triggerHttp) => {
 
 const getDescription = (novel) => {
   if (novel && novel.title) {
-    let description = `${novel.title}小说阅读,`
-    description += `${novel.typename}${novel.title}由作家${novel.author}创作,${SiteName}提供${novel.title}最新章节及章节列表,${SiteName}提供最佳阅读体验，章节阅读自动翻页，无需手动翻页，无弹窗阅读就上${SiteName}`
+    let description = `${novel.title}小说免费阅读,${novel.title}作者${novel.author},`
+    description += `${novel.typename}${novel.title}全文全本免费阅读,${novel.title}TXT下载,${SiteName}提供${novel.title}最新免费章节,${SiteName}提供最佳在线阅读体验，章节阅读自动翻页，无弹窗阅读就上${SiteName}`
     return description
   }
 
@@ -63,7 +63,7 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
   const [novel, list, DescMenus, total, recommendBooks] = Array.isArray(data) && data.length >= 5 ? data : [{}, [], [], 0, []]
 
   // title
-  const title = novel && novel.title ? `${novel.title}_${novel.author}著_${novel.typename}${novel.isComplete ? '全本小说_' : ''}_${novel.title}无弹窗阅读_${novel.title}免费看_${SiteName}` : `${SiteName}_免费看小说_无弹窗小说`
+  const title = novel && novel.title ? `${novel.title}小说全文免费在线阅读_${novel.author}著_${novel.typename}${novel.isComplete ? '全本小说_' : ''}_${novel.title}无弹窗阅读_${novel.title}免费看_${SiteName}` : `${SiteName}_免费看小说_无弹窗小说`
   const description = getDescription(novel)
 
   const lastMenu = DescMenus.length ? DescMenus[0] : (list.length ? list[list.length - 1] : {})
