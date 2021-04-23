@@ -18,6 +18,7 @@ import Page404 from '@@/404/index'
 
 import styles from '@/styles/Book.module.scss'
 import classnames from 'classnames/bind'
+import { Keywords } from '../utils';
 const cx = classnames.bind(styles)
 
 const defaultPageSize = 20
@@ -50,8 +51,8 @@ const useStateRef = (pageIndex, isDesc, pageSize, triggerHttp) => {
 
 const getDescription = (novel) => {
   if (novel && novel.title) {
-    let description = `${novel.title}小说免费阅读,${novel.title}作者${novel.author},`
-    description += `${novel.typename}${novel.title}全文全本免费阅读,${novel.title}TXT下载,${SiteName}提供${novel.title}最新免费章节,${SiteName}提供最佳在线阅读体验，章节阅读自动翻页，无弹窗阅读就上${SiteName}`
+    let description = `${novel.title}小说,是作家${novel.author}创作的${novel.typename},`
+    description += `,${SiteName}提供${novel.title}最新免费章节:${lastMenu.mname},${SiteName}提供最佳在线阅读体验，章节阅读自动翻页，无弹窗阅读就上${SiteName}`
     return description
   }
 
@@ -65,6 +66,8 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
   // title
   const title = novel && novel.title ? `${novel.title}小说全文免费在线阅读_${novel.author}著_${novel.typename}${novel.isComplete ? '全本小说_' : ''}_${novel.title}无弹窗阅读_${novel.title}免费看_${SiteName}` : `${SiteName}_免费看小说_无弹窗小说`
   const description = getDescription(novel)
+  const _keywords = novel && novel.title ? `${novel.title}小说免费在线阅读,${novel.title}最新章节,${novel.title}${novel.author},${novel.title}全文全本免费阅读,${novel.title}无弹窗阅读,${novel.title}TXT下载`
+  : `${SiteName},免费看小说`
 
   const lastMenu = DescMenus.length ? DescMenus[0] : (list.length ? list[list.length - 1] : {})
 
@@ -192,8 +195,7 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
       <Head>
         <title>{title}</title>
         <meta name="description" content={description}></meta>
-        <meta name="keywords" content={novel && novel.title ? `${novel.title}最新章节,${novel.title}免费阅读,${novel.title}无弹窗阅读`
-          : `${SiteName},免费看小说`}></meta>
+        <meta name="keywords" content={_keywords}></meta>
       </Head>
       <Top noH1={true} />
       <Search />
