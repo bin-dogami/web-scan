@@ -1014,6 +1014,12 @@ footer  {
   }
 }
 
+// 禁止文字选中
+.pages {
+  user-select: none; /* 禁止长按选择文字 */
+  -webkit-touch-callout: none;
+}
+
 // 主题颜色
 //  灰色
 .pageTheme1 {

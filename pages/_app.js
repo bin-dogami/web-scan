@@ -6,8 +6,9 @@ import rootStore from '@/stores';
 import Router from "next/router";
 import NProgress from 'nprogress'
 
+// https://github.com/vercel/next.js/blob/canary/examples/with-loading/pages/_app.js
+// https://stackoverflow.com/questions/60755316/nextjs-getserversideprops-show-loading
 Router.events.on('routeChangeStart', (url) => {
-  console.log(`Loading: ${url}`)
   NProgress.start()
 })
 Router.events.on('routeChangeComplete', () => NProgress.done())
