@@ -52,7 +52,7 @@ const useStateRef = (pageIndex, isDesc, pageSize, triggerHttp) => {
 const getDescription = (novel, lastMenu) => {
   if (novel && novel.title) {
     let description = `${novel.title}小说,是作家${novel.author}创作的${novel.typename},`
-    description += `,${SiteName}提供${novel.title}最新免费章节-${lastMenu.mname},${novel.title}无弹窗免费阅读及TXT下载,${SiteName}提供最佳在线阅读体验，章节阅读自动翻页`
+    description += `,${SiteName}提供${novel.title}最新免费章节-${lastMenu.mname},${novel.title}无弹窗免费观看及TXT下载,${SiteName}提供最佳在线阅读体验，章节阅读自动翻页`
     return description
   }
 

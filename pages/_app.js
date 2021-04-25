@@ -3,6 +3,15 @@ import '@/styles/globals.scss'
 import { useEffect } from 'react'
 import { Provider } from 'mobx-react';
 import rootStore from '@/stores';
+import Router from "next/router";
+import NProgress from 'nprogress'
+
+Router.events.on('routeChangeStart', (url) => {
+  console.log(`Loading: ${url}`)
+  NProgress.start()
+})
+Router.events.on('routeChangeComplete', () => NProgress.done())
+Router.events.on('routeChangeError', () => NProgress.done())
 
 function MyApp ({ Component, pageProps }) {
   // useEffect(() => {
