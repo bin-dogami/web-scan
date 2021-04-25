@@ -272,7 +272,7 @@ input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
 }
 
 #nprogress .bar {
-  background: #ffd5a0;
+  background: #ffbc68;
 
   position: fixed;
   z-index: 1031;
@@ -290,7 +290,7 @@ input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
   right: 0px;
   width: 100px;
   height: 100%;
-  box-shadow: 0 0 10px #ffd5a0, 0 0 5px #ffd5a0;
+  box-shadow: 0 0 10px #ffbc68, 0 0 5px #ffbc68;
   opacity: 1.0;
 
   -webkit-transform: rotate(3deg) translate(0px, -4px);
@@ -313,8 +313,8 @@ input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
   box-sizing: border-box;
 
   border: solid 2px transparent;
-  border-top-color: #ffd5a0;
-  border-left-color: #ffd5a0;
+  border-top-color: #ffbc68;
+  border-left-color: #ffbc68;
   border-radius: 50%;
 
   -webkit-animation: nprogress-spinner 400ms linear infinite;
