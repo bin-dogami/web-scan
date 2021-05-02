@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { observer, inject } from 'mobx-react';
-import { useLoading, useScrollThrottle, SiteName } from '@/utils/index'
+import { useLoading, useScrollThrottle, SiteName, IS_DEV } from '@/utils/index'
 import { getBooksByHot } from '@/utils/request'
 
 import Head from 'next/head'
@@ -14,7 +14,7 @@ import styles from '@/styles/Types.module.scss'
 import classnames from 'classnames/bind'
 const cx = classnames.bind(styles)
 
-const pageSize = 100
+const pageSize = IS_DEV ? 5 : 100
 const Hot = ({ data, skip }) => {
   const list = Array.isArray(data) ? data : []
 

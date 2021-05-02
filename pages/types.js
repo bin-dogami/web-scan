@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { observer, inject } from 'mobx-react';
-import { useLoading, useScrollThrottle, SiteName } from '@/utils/index'
+import { useLoading, useScrollThrottle, SiteName, IS_DEV } from '@/utils/index'
 // 其实一个接口就行了，懒得改了
 import { getTypesData, getBooksByType } from '@/utils/request'
 
@@ -15,7 +15,7 @@ import styles from '@/styles/Types.module.scss'
 import classnames from 'classnames/bind'
 const cx = classnames.bind(styles)
 
-const pageSize = 100
+const pageSize = IS_DEV ? 5 : 100
 // 切换type类型时缓存一下数据
 const cachedTypes = {}
 const Types = ({ data, id, page }) => {

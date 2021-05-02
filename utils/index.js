@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from 'react'
 import { getBooksLastPageByIds } from './request'
+// import Link from '@@/link/index'
 
 export const SiteName = '老王爱看书网'
 export const Description = `${SiteName}提供免费最佳阅读体验，章节阅读自动翻页，无需手动翻页，页面无弹窗广告，${SiteName}提供最新小说，全本小说，玄幻小说，都市小说，科幻小说，热门小说，仙侠小说，历史小说`
@@ -76,6 +77,15 @@ export const useLoading = (loading, hasMore) => {
     !hasMore ? <NoMoreText /> : (loading ? <LoadingText /> : null)
   )
 }
+// const onPreventDefault = e => e.preventDefault()
+// export const useLoadingWhenViewing = (loading, hasMore, as, href) => {
+//   const GetMore = () => <div className="getMore">
+//     <Link onClick={onPreventDefault} as={as} href={href}>下一页</Link>
+//   </div>
+//   return (
+//     !hasMore ? <NoMoreText /> : (loading ? <LoadingText /> : <GetMore />)
+//   )
+// }
 
 // 根据目录总数、倒序与否、每页数 获得分页下拉选项数据
 // @TODO: 当有好多个和小说无关的章节时，这个计算和实际展示的章节会偏移的厉害

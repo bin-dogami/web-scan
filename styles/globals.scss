@@ -348,10 +348,11 @@ input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
 
 // 为了SEO
 .notShow {
-  height: 0;
-  font-size: 0;
-  line-height: 0;
-  overflow: hidden;
+  height: 5px;
+  font-size: 12px;
+  text-align: center;
+  color: #F8F9FA;
+  // overflow: hidden;
 }
 
 .chunkShadow {
