@@ -10,6 +10,7 @@ const HistoryRead = ({ getAll, excluded }) => {
   const [loaded, setLoaded] = useState(false)
   const [novels, setNovels] = useState([])
 
+  const indexNum = 3
   const init = async () => {
     const historys = WebStorage.get(HistoryBooksKey)
     if (historys) {
@@ -26,13 +27,13 @@ const HistoryRead = ({ getAll, excluded }) => {
             } else {
               repeatList.push(item)
             }
-            if (_list.length >= 5) {
+            if (_list.length >= indexNum) {
               break
             }
           }
-          list = _list.length >= 5 ? _list : [..._list, ...repeatList].slice(0, 5)
+          list = _list.length >= indexNum ? _list : [..._list, ...repeatList].slice(0, indexNum)
         } else {
-          list = list.slice(0, 5)
+          list = list.slice(0, indexNum)
         }
       }
       setNovels(list)
