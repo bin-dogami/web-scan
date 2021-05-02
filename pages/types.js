@@ -84,7 +84,7 @@ const Types = ({ data, id, page }) => {
       getData()
     }
 
-    window && window.history.replaceState(null, null, window.location.href.replace(/types\/.*$/, `types/${id}`))
+    window && window.history.replaceState(null, null, window.location.href.replace(/types\/?.*$/, `types/${id}`))
   }
 
   useScrollThrottle((scrollTop, clientHeight, scrollHeight) => {
