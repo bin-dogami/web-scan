@@ -14,7 +14,7 @@ import styles from '@/styles/Types.module.scss'
 import classnames from 'classnames/bind'
 const cx = classnames.bind(styles)
 
-const pageSize = 5
+const pageSize = 100
 const Complete = ({ data, skip }) => {
   const list = Array.isArray(data) ? data : []
 

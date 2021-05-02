@@ -15,8 +15,7 @@ import styles from '@/styles/Types.module.scss'
 import classnames from 'classnames/bind'
 const cx = classnames.bind(styles)
 
-// @TODO:
-const pageSize = 5
+const pageSize = 100
 // 切换type类型时缓存一下数据
 const cachedTypes = {}
 const Types = ({ data, id, page }) => {
