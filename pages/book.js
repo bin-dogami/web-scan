@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { observer, inject } from 'mobx-react';
-// import { useRouter } from 'next/router'
 import { SiteName, Description, devHost, useHttping, usePagination, usePaginationDrops, scrollIntoView } from '@/utils/index'
 import { getBookById, getMenusByBookId } from '@/utils/request'
 import * as dayjs from 'dayjs'
@@ -60,12 +59,11 @@ const getDescription = (novel, lastMenu) => {
 }
 
 const Book = ({ store: { common }, data, id, page, desc, skip }) => {
-  // const router = useRouter()
   const [novel, list, DescMenus, total, recommendBooks] = Array.isArray(data) && data.length >= 5 ? data : [{}, [], [], 0, []]
   const lastMenu = DescMenus.length ? DescMenus[0] : (list.length ? list[list.length - 1] : {})
 
   // title
-  const title = novel && novel.title ? `${novel.title}小说全文免费在线阅读_${novel.author}著_${novel.typename}${novel.isComplete ? '全本小说_' : ''}${novel.title}无弹窗免费阅读_${SiteName}` : `${SiteName}_无弹窗免费小说`
+  const title = novel && novel.title ? `${novel.title}小说全文免费在线阅读${novel.seotitle ? '_' + novel.seotitle : ''}_${novel.author}著_${novel.title}${novel.typename}${novel.isComplete ? '全本' : ''}无弹窗免费阅读_${SiteName}` : `${SiteName}_无弹窗免费小说`
   const description = getDescription(novel, lastMenu)
   const _keywords = novel && novel.title ? `${novel.title}小说免费阅读,${novel.title}最新章节,${novel.title}${novel.author},${novel.title}全文免费观看`
   : `${SiteName},免费看小说`

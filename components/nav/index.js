@@ -5,7 +5,7 @@ import Link from '@@/link/index'
 const Nav = ({ name, children }) => {
 
   useEffect(() => {
-    document.body.setAttribute('class', name)
+    document.body.setAttribute('class', name || '')
   }, [name])
 
   return (
