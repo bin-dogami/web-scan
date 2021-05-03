@@ -93,7 +93,8 @@
   font-size: 16px;
   line-height: 28px;
 
-  strong {
+  h2 {
+    display: inline;
     font-weight: normal;
     color: #f7700f;
   }
@@ -109,7 +110,7 @@
   display: flex;
   justify-content: space-between;
 
-  h3 {
+  h2 {
     padding-left: 10px;
     border-left: 3px solid #f7700f;
     height: 18px;

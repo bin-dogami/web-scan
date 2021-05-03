@@ -21,7 +21,7 @@ import classnames from 'classnames/bind'
 import { Keywords } from '../utils';
 const cx = classnames.bind(styles)
 
-const defaultPageSize = 20
+const defaultPageSize = 50
 const oppositeDefaultPageSize = 100
 const realRequestNum = 100
 const useStateRef = (pageIndex, isDesc, pageSize, triggerHttp) => {
@@ -67,9 +67,8 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
   // title
   const title = novel && novel.title ? `${novel.title}小说全文免费在线阅读_${novel.author}著_${novel.typename}${novel.isComplete ? '全本小说_' : ''}${novel.title}无弹窗免费阅读_${SiteName}` : `${SiteName}_无弹窗免费小说`
   const description = getDescription(novel, lastMenu)
-  const _keywords = novel && novel.title ? `${novel.title}小说免费在线阅读,${novel.title}最新章节,${novel.title}${novel.author},${novel.title}全文全本免费观看`
+  const _keywords = novel && novel.title ? `${novel.title}小说免费阅读,${novel.title}最新章节,${novel.title}${novel.author},${novel.title}全文免费观看`
   : `${SiteName},免费看小说`
-
 
   const [triggerHttp, setTriggerHttp] = useState(0)
   const cachedMenusObj = useRef({
@@ -144,7 +143,7 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
     }
   }, [pageIndex, pageChange, menuOptions])
 
-  // 发请求，不管是每页20还是100 都请求100个回来，怎么处理再按每页多少来
+  // 发请求，不管是每页100还是200 都请求200个，怎么处理再按每页多少来
   const getData = useCallback(async () => {
     return await getMenusByBookId(id, httpStartRef.current * realRequestNum, realRequestNum, isDescRef.current)
   }, [])
@@ -178,7 +177,7 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
   }, [httpData])
 
   useEffect(() => {
-    if (pageSizeRef.current === 100 && menusList.length) {
+    if (pageSizeRef.current === oppositeDefaultPageSize && menusList.length) {
       scrollIntoView(document.querySelector('#menus'))
     }
   }, [menusList])
@@ -223,12 +222,13 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
                 </div>
                 <div className={styles.info}>
                   <header>
-                    <h3>
+                    <h2>
                       作者：
                       <Link as={`/author/${novel.authorId}`} href={`/author?id=${novel.authorId}`} title={`作者：${novel.author}`} className={styles.author}>{novel.author}</Link>
-                    </h3>
+                    </h2>
                   </header>
                   <ul>
+                    <li><strong>更新时间：{dayjs(novel.updatetime).format('YYYY-MM-DD HH:mm')}</strong></li>
                     <li>
                       <strong>
                         类别：<Link href={`/types/${novel.typeid}`}>
@@ -239,7 +239,6 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
                     <li>
                       <strong>状态：{novel.isComplete ? <Link href='/complete' title="完本">完本</Link> : '连载'}</strong>
                     </li>
-                    <li><strong>更新时间：{dayjs(novel.updatetime).format('YYYY-MM-DD HH:mm')}</strong></li>
                     <li>
                       <strong>
                         最新章节：{lastMenu && lastMenu.id ?
@@ -262,22 +261,22 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
                 <span className={styles.goBottom} onClick={onGoBottom}>直达底部</span>
               </div>
               <div className={styles.description}>
-                <strong>简介：</strong>{(novel.description || '').trim()}
+                <h2>{novel.title}小说简介：</h2>{(novel.description || '').trim()}
               </div>
             </article>
             <section>
-              <header className="notShow">
+              {/* <header className="notShow">
                 <h2>
                   {novel.title}
                   章节列表
                 </h2>
-              </header>
+              </header> */}
               {DescMenus.length && !isDesc ?
                 <article className={styles.menusWrapper}>
                   <header className={styles.menusHeader}>
-                    <h3>
-                      {novel.title.length < 10 ? `${novel.title} · 最新章节` : '最新章节'}
-                    </h3>
+                    <h2>
+                      {novel.title.length < 10 ? `${novel.title}最新章节` : '最新章节'}
+                    </h2>
                     <span onClick={onDesc}>更多 (倒序)</span>
                   </header>
                   {/* @TODO: 如果是全本且最后一章加上 完 */}
@@ -294,13 +293,13 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
               }
               <article className={styles.menusWrapper} id="menus">
                 <header className={styles.menusHeader}>
-                  <h3>
-                    {novel.title.length < 10 ? `${novel.title} · ` : ''}
+                  <h2>
+                    {novel.title.length < 10 ? `${novel.title}目录列表` : ''}
                     <select value={isDesc} onChange={onDesc}>
-                      <option value={0}>正文正序</option>
-                      <option value={1}>正文倒序</option>
+                      <option value={0}>正序</option>
+                      <option value={1}>倒序</option>
                     </select>
-                  </h3>
+                  </h2>
                   {/* {isDesc ? <span onClick={onDesc}>正序</span> : null} */}
                   <span onClick={onSetPageSize}>每页 {oppositePageSize} 章</span>
                 </header>
