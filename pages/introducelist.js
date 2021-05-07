@@ -14,7 +14,7 @@ import styles from '@/styles/Types.module.scss'
 import classnames from 'classnames/bind'
 const cx = classnames.bind(styles)
 
-const pageSize = IS_DEV ? 5 : 100
+const pageSize = IS_DEV ? 16 : 100
 const Introducelist = ({ data, skip }) => {
   const _data = typeof data === 'object' ? data : {}
   const list = Array.isArray(_data.list) ? _data.list : []
@@ -38,8 +38,9 @@ const Introducelist = ({ data, skip }) => {
     loadingRef.current = true
     setLoading(true)
 
-    const res = await getTypesData(startRef.current * pageSize, pageSize)
-    const list = Array.isArray(res.data.data) ? res.data.data : []
+    const res = await getTypesData(0, startRef.current * pageSize, pageSize)
+    const _data = typeof res.data.data === 'object' ? res.data.data : {}
+    const list = Array.isArray(_data.list) ? _data.list : []
     const newNovels = [...novelsRef.current, ...list]
     novelsRef.current = newNovels
     setNovels(newNovels)
@@ -79,7 +80,7 @@ const Introducelist = ({ data, skip }) => {
       </header>
       <ul className="simple">
         {novels.map(({id, title}, index) => (
-          <li>
+          <li key={id}>
             <Link as={`/introduce/${id}`} href={`/introduce?id=${id}`} title={`${title}`}>
               《{title}》内容简介
             </Link>
@@ -98,7 +99,7 @@ const Introducelist = ({ data, skip }) => {
 export async function getServerSideProps ({ query }) {
   const skip = query.id && +query.id || 0
   // @TODO: 数据貌似有点问题？加载更多没有出现
-  const res = await getTypesData(skip * pageSize, pageSize)
+  const res = await getTypesData(0, skip * pageSize, pageSize)
   const data = res.data.data
   return { props: { data, skip } }
 }
