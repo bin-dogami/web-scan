@@ -6,7 +6,6 @@ import { IS_DEV } from '@/utils'
 const baiduHmScript = () => {
   return {
     __html: `
-      <script>
       var _hmt = _hmt || [];
       (function() {
         var hm = document.createElement("script");
@@ -19,7 +18,6 @@ const baiduHmScript = () => {
           }}
         ]);
       })();
-      </script>
     `,
   }
 }
