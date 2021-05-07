@@ -2,16 +2,25 @@ import Document, { Html, Head, Main, NextScript } from 'next/document'
 
 import { IS_DEV } from '@/utils'
 
+// 单页面设置 https://tongji.baidu.com/web/help/article?id=324&type=0
 const baiduHmScript = () => {
   return {
     __html: `
-    var _hmt = _hmt || [];
-    (function() {
-      var hm = document.createElement("script");
-      hm.src = "https://hm.baidu.com/hm.js?9598bdf276817c07e9d4393a5bd0da08";
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
-    })();`,
+      <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?9598bdf276817c07e9d4393a5bd0da08";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+        _hmt.push(['_requirePlugin', 'UrlChangeTracker', {
+          shouldTrackUrlChange: function (newPath, oldPath) {
+          return newPath && oldPath;
+          }}
+        ]);
+      })();
+      </script>
+    `,
   }
 }
 
