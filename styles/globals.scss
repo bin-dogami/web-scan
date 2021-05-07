@@ -991,6 +991,42 @@ footer  {
   }
 }
 
+// .introducelist 页用
+.paging {
+  margin: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  a {
+    font-size: 14px;
+  }
+}
+.simple {
+  li {
+    padding: 0 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    line-height: 44px;
+    font-size: 14px;
+    background-color: #fff;
+    margin-bottom: 1px; /*no*/
+    position: relative;
+  }
+
+  a {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #1ca9bb;
+
+    &:link {
+      color: #4e6ef2;
+    }
+  }
+}
+
 .authorList {
   li {
     padding: 0 16px;

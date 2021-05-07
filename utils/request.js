@@ -107,6 +107,17 @@ export const getBookById = async (id, skip = 0, desc = 0) => {
   })
 }
 
+export const getBookInfo = async (id) => {
+  return await axios({
+    url: `${BASE_URL}scan/getBookInfo/`,
+    method: 'get',
+    params: {
+      id,
+    },
+    errorTitle: '获取书本信息错误',
+  })
+}
+
 export const getMenusByBookId = async (id, skip, size = 20, desc = 0) => {
   return await axios({
     url: `${BASE_URL}scan/getMenusByBookId/`,

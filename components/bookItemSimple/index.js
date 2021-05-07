@@ -34,7 +34,7 @@ const BookItem = ({ isHistory, hasMenu, data: { id, title, author, authorId, pag
 
   return (
     <li className={styles.bookItemSimple}>
-      <Link as={`/book/${id}`} href={`/book?id=${id}`} title={`书名：${title}`} className={cx({ title: true, half: isHistory })}>
+      <Link as={`/book/${id}`} href={`/book?id=${id}`} title={`${title}`} className={cx({ title: true, half: isHistory })}>
         <strong>{title}</strong>
       </Link>
       {RightLink}

@@ -1,10 +1,10 @@
-.book {
+.book, .novel {
   background-color: #fff;
   padding: 16px 16px 12px;
   margin-bottom: 8px;
 }
 
-.detail {
+.detail, .content {
   display: flex;
   font-size: 14px;
 
@@ -31,7 +31,7 @@
 
     .lastMenu {
       color: #f7700f;
-      font-size: 16px;
+      // font-size: 16px;
     }
 
     li {
@@ -46,6 +46,13 @@
 
   .author {
     text-shadow: 0 0 1px #afafaf;
+  }
+}
+
+.content {
+  .info {
+    padding-right: 20px;
+    padding-left: 0;
   }
 }
 
@@ -281,9 +288,17 @@
       margin-left: 3px;
     }
   }
-
 }
 
 .hotRecommend {
   box-shadow: 0 0 5px 1px rgba(0, 0, 0, .05);
+}
+
+.knowMore {
+  margin-top: 20px;
+
+  a {
+    font-size: 14px;
+    color: #f7700f;
+  }
 }

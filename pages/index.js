@@ -20,13 +20,15 @@ const Home = ({ data }) => {
   const [typesData, setTypesData] = useState([]);
   const [hotsData, setHotsData] = useState([]);
   const [updatesData, setUpdatesData] = useState([]);
+  const [introData, setIntroData] = useState([]);
 
   useEffect(() => {
-    if (Array.isArray(data) && data.length > 1) {
-      const [types, hots, updates] = data
+    if (Array.isArray(data) && data.length > 3) {
+      const [types, hots, updates, intros] = data
       setTypesData(types);
       setHotsData(hots)
       setUpdatesData(updates)
+      setIntroData(intros)
     }
   }, [data])
 
@@ -88,6 +90,21 @@ const Home = ({ data }) => {
           </ul>
         </article>
       ))}
+      <article className={styles.typesChunk}>
+        <header className={styles.chunkTitle}>
+          <h2><Link href="/introducelist" title="小说简介">小说简介</Link></h2>
+          <Link href="/introducelist" title={'更多小说介绍'} className={styles.more}>更多...</Link>
+        </header>
+        <ul className="simple">
+          {introData.map(({id, title}, index) => (
+            <li>
+              <Link as={`/introduce/${id}`} href={`/introduce?id=${id}`} title={`${title}`}>
+                《{title}》内容简介
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </article>
     </>
   )
 }

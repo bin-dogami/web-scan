@@ -8,7 +8,7 @@ const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
 
-const hasParamsPath = ['complete', 'types', 'book', 'author', 'page', 'hot', 'updates', 'search', '404']
+const hasParamsPath = ['complete', 'types', 'book', 'author', 'page', 'hot', 'updates', 'search', 'introduce', '404']
 
 // const collectUserVisitInfo = (data) => {
 //   const options = {
