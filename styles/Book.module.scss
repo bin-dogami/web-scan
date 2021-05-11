@@ -302,3 +302,14 @@
     color: #f7700f;
   }
 }
+
+.mt30 {
+  margin-top: 30px;
+}
+
+.shortContent {
+  display: -webkit-box;
+  overflow: hidden;  
+  -webkit-line-clamp: 15;
+  -webkit-box-orient: vertical;
+}

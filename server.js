@@ -8,7 +8,7 @@ const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
 
-const hasParamsPath = ['complete', 'types', 'book', 'author', 'page', 'hot', 'updates', 'search', 'introduce', '404']
+const hasParamsPath = ['complete', 'types', 'book', 'author', 'page', 'hot', 'updates', 'search', 'introducelist', 'introduce', '404']
 
 // const collectUserVisitInfo = (data) => {
 //   const options = {
@@ -48,7 +48,7 @@ app.prepare().then(() => {
       const path = filterPath[0]
       const value = pathname.replace(`/${path}/`, '')
       let params = path === 'search' ? { name: value } : { id: value }
-      if (path === 'book') {
+        if (path === 'book') {
         const [id, page, desc] = value.split('/')
         params = {
           id, page, desc

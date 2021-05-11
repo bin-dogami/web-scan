@@ -3,8 +3,8 @@ import { getBooksLastPageByIds } from './request'
 // import Link from '@@/link/index'
 
 export const SiteName = '老王爱看书网'
-export const Description = `${SiteName}提供免费最佳阅读体验，章节阅读自动翻页，无需手动翻页，页面无弹窗广告，${SiteName}提供最新小说，全本小说，玄幻小说，都市小说，科幻小说，热门小说，仙侠小说，历史小说`
-export const Keywords = `${SiteName},小说网,手机小说,最新小说推荐,小说阅读网,无弹窗小说网,免费小说下载网,小说阅读器全本免费小说,${SiteName},小说网站排名,小说在线阅读,免费小说阅读`
+export const Description = `${SiteName}提供免费最佳阅读体验,章节阅读自动翻页,无需手动翻页,页面无弹窗广告,${SiteName}提供最新小说,全本小说,玄幻小说,电视剧同名小说,都市小说,科幻小说,热门小说,仙侠小说,历史小说`
+export const Keywords = `${SiteName},免费小说网,手机小说,最新小说推荐,小说阅读网,无弹窗小说网,小说阅读器全本免费小说,小说网站排名,小说在线阅读,免费小说阅读`
 
 export const devHost = 1 ? 'localhost' : '192.168.31.231'
 const productionHost = 'https://m.zjjdxr.com/';
@@ -40,7 +40,7 @@ export const useHttping = (triggerHttp, httpFn) => {
 }
 
 // 根据http请求返回的数据生成 可用的list、hasMore
-// data: {list, any[], total: 1000, isReRequest?: false}，data 必须为 useState 对象
+// data: {list, any[], total: 1000, isReRequest?: false},data 必须为 useState 对象
 export const usePagination = (data) => {
   const [mergedList, setList] = useState([])
   const [hasMore, setHasMore] = useState(true)

@@ -51,7 +51,7 @@ const useStateRef = (pageIndex, isDesc, pageSize, triggerHttp) => {
 const getDescription = (novel, lastMenu) => {
   if (novel && novel.title) {
     let description = `${novel.title},是作家${novel.author}创作的${novel.typename},`
-    description += `,${SiteName}提供${novel.title}最新免费章节-${lastMenu.mname},${novel.title}无弹窗免费观看,${SiteName}提供最佳在线阅读体验，章节阅读实现连续自动翻页`
+    description += `,${SiteName}提供${novel.title}免费最新章节-${lastMenu.mname},${novel.title}全文无弹窗免费观看,${SiteName}提供最佳在线阅读体验，章节阅读实现连续自动翻页并可缓存观看`
     return description
   }
 
@@ -64,7 +64,7 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
 
   // title
   // const title = novel && novel.title ? `${novel.title}小说全文免费在线阅读${novel.seotitle ? '_' + novel.seotitle : ''}_${novel.author}著_${novel.title}${novel.typename}${novel.isComplete ? '全本' : ''}无弹窗免费阅读_${SiteName}` : `${SiteName}_无弹窗免费小说`
-  const title = novel && novel.title ? `${novel.title}最新章节_${novel.title}免费阅读_${novel.author}著_${novel.title}${novel.typename}${novel.isComplete ? '全本' : '全文'}免费阅读_${SiteName}` : `${SiteName}_无弹窗免费小说`
+  const title = novel && novel.title ? `${novel.title}_${novel.author}著_${novel.title}最新章节_${novel.title}${novel.isComplete ? '全本' : ''}全文阅读_${novel.title}免费看_${SiteName}` : `${SiteName}_无弹窗免费小说`
   const description = getDescription(novel, lastMenu)
   const _keywords = novel && novel.title ? `${novel.title}最新章节列表,${novel.title}全文免费阅读,${novel.title}${novel.author}`
   : `${SiteName},免费看小说`
@@ -205,6 +205,20 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
             <header className="header crumbs">
               <strong><Link href="/" title="首页">首页</Link></strong>
               <span>/</span>
+              {novel.isComplete ? 
+                <strong>
+                  <Link href={`/complete`} title="完本小说">完本小说</Link>
+                </strong> 
+              : (
+                novel.isRec ? 
+                <strong>
+                  <Link href={`/hot`} title="热门小说">热门小说</Link>
+                </strong> 
+              : null
+              )}
+              {novel.isComplete || novel.isRec ? 
+              <span>/</span>
+              : null}
               <strong>
                 <Link as={`/types/${novel.typeid}`} href={`/types?id=${novel.typeid}`} title={novel.typename}>{novel.typename}</Link>
               </strong>
@@ -213,7 +227,7 @@ const Book = ({ store: { common }, data, id, page, desc, skip }) => {
             </header>
             <article className={styles.book}>
               <header className="commonHeader">
-                <h1>{novel.title}</h1>
+                <h1>{novel.title} {novel.isRec ? '(热门推荐)' : ''}</h1>
               </header>
               <div className={styles.detail}>
                 <div className={styles.thumb}>

@@ -11,10 +11,12 @@ import Link from '@@/link/index'
 import BookItemSimple from '@@/bookItemSimple/index'
 
 const Updates = ({ data }) => {
+  const names = data.slice(0, 5).map(({title}) => title).join('最新章节,')
+
   return (
     <>
       <Head>
-        <title>{`最新更新的小说列表_${SiteName}`}</title>
+        <title>{`最新更新的小说列表,${names}最新章节_${SiteName}`}</title>
         <meta name="description" content={Description}></meta>
         <meta name="keywords" content={Keywords}></meta>
       </Head>

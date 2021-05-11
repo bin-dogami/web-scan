@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { observer, inject } from 'mobx-react';
 import { useLoading, useScrollThrottle, SiteName, IS_DEV } from '@/utils/index'
-// 其实一个接口就行了，懒得改了
 import { getTypesData, getBooksByType } from '@/utils/request'
 
 import Head from 'next/head'
@@ -19,10 +18,8 @@ const pageSize = IS_DEV ? 5 : 100
 // 切换type类型时缓存一下数据
 const cachedTypes = {}
 const Types = ({ data, id, page }) => {
-  const _data = typeof data === 'object' ? data : {}
-  _data.types = Array.isArray(_data.types) ? _data.types : []
-  const list = Array.isArray(_data.list) ? _data.list : []
-  const types = [{ id: 0, name: '全部分类' }, ..._data.types]
+  const [_types, list, _hasMore] = Array.isArray(data) && data.length >= 3 ? data : [[], [], false]
+  const types = [{ id: 0, name: '全部分类' }, ..._types]
 
   const [currentTypeName, setCurrentTypeName] = useState('')
   const [typeValue, setTypeValue] = useState(id)
@@ -32,10 +29,10 @@ const Types = ({ data, id, page }) => {
   const [start, setStart] = useState(page + 1)
   const startRef = useRef(start)
   const [hasMore, setHasMore] = useState(true)
-  const hasMoreRef = useRef(hasMore)
+  const hasMoreRef = useRef(_hasMore)
   const [loading, setLoading] = useState(false)
   const loadingRef = useRef(loading)
-  const LoadingChunk = useLoading(loading, hasMore)
+  const LoadingChunk = useLoading(loading, _hasMore)
 
   // 发请求
   const getData = useCallback(async () => {
@@ -46,13 +43,13 @@ const Types = ({ data, id, page }) => {
     setLoading(true)
 
     const res = await getBooksByType(typeValueRef.current, startRef.current * pageSize, pageSize)
-    const list = Array.isArray(res.data.data) ? res.data.data : []
+    const [list, _hasMore] = Array.isArray(res.data.data) && res.data.data.length >= 2 ? res.data.data : [[], false]
     const newNovels = startRef.current ? [...novelsRef.current, ...list] : list
     novelsRef.current = newNovels
     setNovels(newNovels)
     if (list.length < pageSize) {
-      hasMoreRef.current = false
-      setHasMore(false)
+      hasMoreRef.current = _hasMore
+      setHasMore(_hasMore)
       cachedTypes[typeValueRef.current] = [JSON.parse(JSON.stringify(newNovels)), startRef.current, false]
     } else {
       const nextStart = startRef.current + 1
@@ -105,12 +102,15 @@ const Types = ({ data, id, page }) => {
     cachedTypes[id] = [novels, start, hasMore]
   }, [])
 
+  const title = id === 0 ? '全部分类小说推荐_全部分类小说列表' : `${currentTypeName}推荐_${currentTypeName}列表`
+  const typeName = id === 0 ? '玄幻小说,武侠小说,电视剧同名小说,网游小说,都市小说,言情小说,历史小说,军小说事,科幻小说,恐怖小说,官场小说,穿越小说,免费小说阅读,在线小说无弹窗阅读' : `${currentTypeName}推荐,${currentTypeName}列表,${currentTypeName}免费阅读,${currentTypeName}在线无弹窗阅读`
+
   return (
     <>
       <Head>
-        <title>{`分类小说推荐_中文小说排行榜_${SiteName}`}</title>
-        <meta name="description" content={`${SiteName}提供玄幻、武侠、原创、网游、都市、言情、历史、军事、科幻、恐怖、官场、穿越、重生等小说,最新全本免费手机小说阅读推荐,精彩尽在${SiteName}。`}></meta>
-        <meta name="keywords" content={`玄幻小说,武侠小说,原创小说,网游小说、都市小说,言情小说,历史小说,军小说事,科幻小说,恐怖小说,官场小说,穿越小说,全本小说,免费小说下载,小说在线阅读,无弹窗小说网`}></meta>
+        <title>{`${title}_${SiteName}`}</title>
+        <meta name="description" content={`${SiteName}提供免费玄幻、修真、电视剧同名小说、武侠、都市、言情、历史、军事、科幻、官场、穿越、重生等小说,最新免费手机小说阅读推荐,精彩尽在${SiteName}。`}></meta>
+        <meta name="keywords" content={typeName}></meta>
       </Head>
       <Top noH1={true} />
       <Search />

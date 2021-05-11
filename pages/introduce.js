@@ -19,15 +19,15 @@ import classnames from 'classnames/bind'
 const cx = classnames.bind(styles)
 
 const Introduce = ({ data, id }) => {
-  const [novel, lastMenu, recommendBooks] = Array.isArray(data) && data.length >= 2 ? data : [{}, []]
+  const [novel, lastMenu, recommendBooks, firstPageContent] = Array.isArray(data) && data.length >= 2 ? data : [{}, null, [], '']
 
   let title = `${SiteName}_无弹窗免费小说`
   let description = Description
   let keywords = `${SiteName},免费看小说`
 
   if (novel && novel.title) {
-    title = `${novel.title}小说简介_${novel.title}内容介绍_${novel.title}情节剧情_${novel.title}${novel.author}_${SiteName}`
-    description = `${novel.title},是作家${novel.author}创作的${novel.typename},${SiteName}提供${novel.title}小说简介及剧情介绍,${novel.title}无弹窗免费观看,${SiteName}提供最佳在线阅读体验，章节阅读实现连续自动翻页`
+    title = `${novel.title}小说内容介绍_${novel.title}内容详细说明_${novel.title}小说预览_${novel.title}情节剧情_${novel.title}${novel.author}_${SiteName}`
+    description = `${novel.title},是作家${novel.author}创作的${novel.typename},${SiteName}提供${novel.title}小说内容介绍、预览及剧情介绍,${novel.title}无弹窗免费观看,${SiteName}提供最佳在线阅读体验，章节阅读实现连续自动翻页`
     keywords = `${novel.title}小说简介,${novel.title}内容介绍,${novel.title}剧情说明,${novel.title}情节介绍`
   }
 
@@ -52,7 +52,7 @@ const Introduce = ({ data, id }) => {
                 <Link href={`/introducelist`} title="小说简介">小说简介</Link>
               </strong>
               <span>/</span>
-              <h1>{novel.title}小说简介</h1>
+              <h1>{novel.title}小说内容介绍</h1>
             </header>
             <div className={styles.novel}>
               <div className={styles.content}>
@@ -74,10 +74,16 @@ const Introduce = ({ data, id }) => {
                   <img src={`${IMAGE_HOST}/${novel.thumb}`} alt={novel.title} title={novel.title} />
                 </div>
               </div>
-              <div className={styles.description}>
-                <strong>{novel.title}小说介绍</strong>
+              <div className={`${styles.description} ${styles.mt30}`}>
+                <strong>{novel.title}小说内容介绍: </strong>
                 {(novel.description || '').trim()}
               </div>
+              {firstPageContent ? 
+              <div className={`${styles.description} ${styles.mt30}`}>
+                  <h2>{novel.title}小说内容预览: </h2>
+                  <div dangerouslySetInnerHTML={{__html: firstPageContent}} className={styles.shortContent} />
+                </div>
+              : null}
               <div className={styles.knowMore}>
                 <Link as={`/book/${id}`} href={`/book?id=${id}`}>
                 更多{novel.title}内容介绍/剧情说明点此查看

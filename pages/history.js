@@ -14,7 +14,7 @@ const History = () => {
     <>
       <Head>
         <title>{`历史阅读_${SiteName}`}</title>
-        <meta name="description" content={Description}></meta>
+        <meta name="description" content={`我的历史阅读小说列表,精彩尽在${SiteName}。`}></meta>
         <meta name="keywords" content={Keywords}></meta>
       </Head>
       <Top noH1={true} />
